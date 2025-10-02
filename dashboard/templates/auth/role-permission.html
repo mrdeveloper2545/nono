@@ -1,0 +1,36 @@
+{% extends 'index.html' %}
+{% block title %} ROLE PERMISSION {% endblock %}
+{% block content %}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Permissions for: {{ group.name }}</h4>
+                        <form action="{% url 'role-permission' group.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <div class="row">
+                                    {% for permission in permissions %}
+                                    <div class="col-md-2">
+                                        <div class="form-check radio control">
+                                            <label class="form-check-label">
+                                                <input type="checkbox" value="{{ permission.id }}" class="form-check-input" name="permission[]" id="permission_{{ permission.id }}" 
+                                                    {% if permission in group.permissions.all %} checked {% endif %}>
+                                                {{ permission.name }}
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Update Permissions</button>
+                        </form>                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

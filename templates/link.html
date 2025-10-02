@@ -1,0 +1,158 @@
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'home' %}">
+          <i class="mdi mdi-home menu-icon"></i>
+          <span class="menu-title">Dashboard</span>
+        </a>
+      </li>
+
+      {% if settings.authentication %}
+      <li class="nav-item nav-category">AUTHENTICATION</li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+          <i class="menu-icon mdi mdi-account"></i>
+          <span class="menu-title">Users</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="auth">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'users' %}"> Users </a></li>
+          </ul>
+        </div>
+      </li>
+      {% endif %}
+
+      {% if settings.authorization %}
+      <li class="nav-item nav-category">AUTHORIZATION</li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#role" aria-expanded="false" aria-controls="role">
+          <i class="menu-icon mdi mdi-briefcase"></i>
+          <span class="menu-title">Roles</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="role">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'roles-management' %}"> Roles </a></li>
+          </ul>
+        </div>
+      </li>
+      {% endif %}
+
+      {% if settings.inventory %}
+      <li class="nav-item nav-category">INVENTORY MANAGEMENT</li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#category" aria-expanded="false" aria-controls="category">
+          <i class="menu-icon mdi mdi-basket"></i>
+          <span class="menu-title">Item Management</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="category">
+          <ul class="nav flex-column sub-menu">
+            <li><a class="nav-link" href="{% url 'unit-management' %}">Units</a></li>
+            <li><a class="nav-link" href="{% url 'category-management' %}">Category</a></li>
+            <li><a class="nav-link" href="{% url 'material-management' %}">Material</a></li>
+            <li><a class="nav-link" href="{% url 'vendor-management' %}">Vendors</a></li>
+            <li><a class="nav-link" href="{% url 'purchase-management' %}">Purchase</a></li>
+            <li><a class="nav-link" href="{% url 'pending-purchase-order' %}">Pending</a></li>
+            <li><a class="nav-link" href="{% url 'approve-purchase-order' %}">Approved</a></li>
+            <li><a class="nav-link" href="{% url 'approved_items' %}">Purchased Items</a></li>
+            <li><a class="nav-link" href="{% url 'cancelled_items' %}">cancelled Items</a></li>
+          </ul>
+        </div>
+      </li>
+      
+      
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#product" aria-expanded="false" aria-controls="product">
+          <i class="menu-icon mdi mdi-parking"></i>
+          <span class="menu-title">Product management</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="product">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'product-management' %}"> Product </a></li>
+          </ul>
+        </div>
+      </li>
+      {% endif %}
+<!-- {% comment %}
+      {% if settings.human_resources %}
+      <li class="nav-item nav-category">HUMAN RESOURCES</li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#employee" aria-expanded="false" aria-controls="employee">
+          <i class="menu-icon mdi mdi-clipboard-account"></i>
+          <span class="menu-title">Employee management</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="employee">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'employee-management' %}"> Enrollment </a></li>
+          </ul>
+        </div>
+      </li>
+      {% endif %}
+{% endcomment %} -->
+      {% if settings.pos %}
+      <li class="nav-item nav-category">POS MANAGEMENT</li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#order" aria-expanded="false" aria-controls="order">
+          <i class="menu-icon mdi mdi-cart"></i>
+          <span class="menu-title">Orders management</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="order">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'order-management' %}"> Orders </a></li>
+          </ul>
+        </div>
+      </li>
+      {% endif %}
+<!-- {% comment %}
+      {% if settings.accounting %}
+      <li class="nav-item nav-category">ACCOUNTING MANAGEMENT</li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#report" aria-expanded="false" aria-controls="report">
+          <i class="menu-icon mdi mdi-poll"></i>
+          <span class="menu-title">BILLING</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="report">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'service-management' %}"> SERVICE </a></li>
+            <li class="nav-item"> <a class="nav-link" href="{% url 'expenses-management' %}"> EXPENSES </a></li>
+          </ul>
+        </div>
+      </li>
+      {% endif %} -->
+      <!-- {% endcomment %} -->
+      <li class="nav-item nav-category">SETTINGS</li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#settings" aria-expanded="false" aria-controls="settings">
+          <i class="menu-icon mdi mdi-settings"></i>
+          <span class="menu-title">GENERAL</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="settings">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'settings-management' %}"> APPS MANAGEMENT </a></li>
+          </ul>
+        </div>
+      </li>
+
+      <li class="nav-item nav-category">SIGN OUT</li>
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#signout" aria-expanded="false" aria-controls="signout">
+          <i class="menu-icon mdi mdi-user"></i>
+          <span class="menu-title"></span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="signout">
+          <ul class="nav flex-column sub-menu">
+            <li class="nav-item"> <a class="nav-link" href="{% url 'logout' %}"> Logout </a></li>
+          </ul>
+        </div>
+      </li>
+
+    </ul>
+  </nav>

@@ -1,0 +1,114 @@
+{% extends 'index.html' %}
+{% block title %} APPLICATIONS MANAGEMENT {% endblock %}
+{% block content %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <form id="autoSubmitForm" action="{% url 'activate-setting' %}" method="post">
+                {% csrf_token %}
+                <div class="col-md-2">
+                    <div class="form-check radio control">
+                        <label class="form-check-label">
+                            <input type="checkbox" id="autoSubmitCheckbox"  class="form-check-input" name="active" 
+                                {% if settings.active %} checked {% endif %} >
+                                {% if settings.active %} deactivate {% else %} activate {% endif %}
+                        </label>
+                    </div>
+                </div>
+            </form>
+            {% if settings.active %}
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3"><center>SELECT APP FOR YOUR SYSTEM</center></h4>
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-2">
+                                        <div class="form-check radio control">
+                                            <label class="form-check-label">
+                                                <input type="checkbox"  class="form-check-input" name="authentication" id="authentication" 
+                                                    {% if settings.authentication %} checked {% endif %}>
+                                                    AUTHENTICATION
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check radio control">
+                                            <label class="form-check-label">
+                                                <input type="checkbox"  class="form-check-input" name="authorization" id="authorization" 
+                                                    {% if settings.authorization %} checked {% endif %}>
+                                                    AUTHORIZATION
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check radio control">
+                                            <label class="form-check-label">
+                                                <input type="checkbox"  class="form-check-input" name="inventory" id="inventory" 
+                                                    {% if settings.inventory %} checked {% endif %}>
+                                                    INVENTORY MANAGEMENT
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check radio control">
+                                            <label class="form-check-label">
+                                                <input type="checkbox"  class="form-check-input" name="human_resources" id="human_resources" 
+                                                    {% if settings.human_resources %} checked {% endif %}>
+                                                    HUMAN RESOURCES
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check radio control">
+                                            <label class="form-check-label">
+                                                <input type="checkbox"  class="form-check-input" name="accounting" id="accounting" 
+                                                    {% if settings.accounting %} checked {% endif %}>
+                                                    ACCOUNTING MANAGEMENT
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check radio control">
+                                            <label class="form-check-label">
+                                                <input type="checkbox"  class="form-check-input" name="pos" id="pos" 
+                                                    {% if settings.pos %} checked {% endif %}>
+                                                    POINT OF SALES MANAGEMENT
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary mt-3">Save</button>
+                        </form>                        
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
+        const checkbox = document.getElementById("autoSubmitCheckbox");
+        const form = document.getElementById("autoSubmitForm");
+
+        checkbox.addEventListener('change', function(){
+            
+                form.submit();
+                if (checkbox.checked){
+                    checkbox.parentNode.classList.remove("unchecked");
+                    checkbox.parentNode.classList.add("checked");
+            }else{
+                checkbox.parentNode.classList.remove("checked");
+                checkbox.parentNode.classList.add("unchecked");
+            }
+        });
+    });
+</script>
+{% endblock %}

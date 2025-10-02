@@ -1,0 +1,148 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PURCHASE INVOICE</title>
+    <style>
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 12px;
+            margin: 40px;
+        }
+
+        .logo {
+            width: 150px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .order-details {
+            margin-bottom: 30px;
+        }
+
+        .order-details table {
+            width: 100%;
+        }
+
+        .order-details td {
+            padding: 5px;
+        }
+
+        table.items {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table.items th, table.items td {
+            border: 1px solid #f1dddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table.items th {
+            background-color: #f2f2f2;
+        }
+
+        .total {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .signatures {
+            margin-top: 80px;
+        }
+
+        .sign-box {
+            display: inline-block;
+            width: 45%;
+            text-align: center;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+            margin: 0 2.5%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo -->
+    <div class="header">
+            <img src="{% static '/images/nono.png' %}" alt="logo" width="100" />        
+        <h2>PURCHASE INVOICE</h2>
+    </div>
+
+    <!-- Order Metadata -->
+    <div class="order-details">
+        <table>
+            <tr>
+                <td><strong>Order Number:</strong> {{ purchase.order_number }}</td>
+                <td><strong>Status:</strong> {{ purchase.status|capfirst }}</td>
+            </tr>
+            <tr>
+                <td><strong>Order Date:</strong> {{ purchase.order_date }}</td>
+                <td><strong>Expected Delivery:</strong> {{ purchase.expected_delivery_date|default:"N/A" }}</td>
+            </tr>
+            {% if purchase.received_date %}
+            <tr>
+                <td><strong>Received Date:</strong> {{ purchase.received_date }}</td>
+            </tr>
+            {% endif %}
+        </table>
+    </div>
+
+    <!-- Items Table -->
+    <table class="items">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Material</th>
+                <th>Vendor</th>
+                <th>Quantity</th>
+                <th>Unit Price(Tsh)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in purchase.items.all %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ item.material.name }}</td>
+                <td>{{ item.vendor.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No items found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Total Cost -->
+    <div class="total">
+        Total Cost: {{ purchase.total_cost }}/=Tsh
+    </div>
+
+    <!-- Signature Boxes -->
+    <div class="signatures">
+        <div class="col-mb-2">
+            <div class="sign-box">
+                Authorized Signature ..............................................................................
+            </div>
+        </div>
+        <div class="sign-box">
+            Store Manager Signature ...................................................................................
+        </div>
+    </div>
+    <div class="col-md-6">
+        <center><p>Copyright © MS NONO INVESTMENT</p></center>
+    </div>
+
+</body>
+</html>

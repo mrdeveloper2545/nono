@@ -1,0 +1,210 @@
+{% extends 'index.html' %}
+{% block title %} STORES MANAGEMENT {% endblock %}
+{% block content %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        {% if perms.stock.add_store %}<button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add Store</button></button>{% endif %}
+        {% if perms.stock.change_store %}<button type="button" class="btn btn-outline-dark mb-3" data-bs-toggle="modal" data-bs-target="#BulkModal">Bulk Update</button></button>{% endif %}
+        <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title"><center> STORES AVAILABLE </center></h4>
+                    <div class="table-responsive">
+                        <table id="myTable" class="table table-striped table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Store Type</th>
+                                    <th>Action</th>                  
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for store in stores %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ store.name }}</td>
+                                    <td>{% if store.main_store %} 
+                                        <span class="badge bg-success">Main Store</span>
+                                        {% else %}
+                                        <span class="badge bg-dark">Sub Store</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if perms.stock.change_store %}<button type="button" data-bs-toggle="modal" data-bs-target="#editModal{{ store.id }}" class="btn btn-outline-success ti-pencil"></button>{% endif %}
+                                        {% if perms.stock.delete_store %}<a class="btn btn-outline-danger ti-trash" href="{% url 'delete-store' store.id %}" onclick="return confirm ('Are you sure you want to delete  {{store.name}}');"></a>{% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Store Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Add Material</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="storeForm" action="{% url 'store-management' %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Main_store</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody data-repeater-list="stores">
+                                <tr data-repeater-item>
+                                    <td><input type="text" class="form-control" name="name[]" required></td>
+                                    <td>
+                                        <div class="form-check radio control">
+                                            <label class="form-check-label">
+                                                <input type="checkbox"  class="form-check-input" name="main_store" id="main_store">
+                                            </label>
+                                        </div>
+                                    </td>
+                                    <td><button data-repeater-delete type="button" class="btn btn-danger btn-sm">Remove</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <button data-repeater-create type="button" class="btn btn-outline-primary">Add More</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Update Store Modal -->
+{% for store in stores %}
+<div class="modal fade" id="editModal{{store.id}}" tabindex="-1" aria-labelledby="editModalLabel{{store.id}}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel{{store.id}}">{{store.name}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="storeForm" action="{% url 'update-store' store.id %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody data-repeater-list="stores">
+                                <tr data-repeater-item>
+                                    <td><input type="text" class="form-control" value="{{store.name}}" id="name{{store.id}}" name="name" required></td>
+                                    <td><button data-repeater-delete type="button" class="btn btn-danger btn-sm">Remove</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> 
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+
+
+<!-- Bulk Material Update -->
+<div class="modal fade" id="BulkModal" tabindex="-1" aria-labelledby="BulkModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                    <h5 class="modal-title" id="BulkModalLabel">Bulk Update store</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="storeForm" action="{% url 'bulk-update-store'%}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody data-repeater-list="stores">
+                                {% for store in stores %}
+                                <tr data-repeater-item>
+                                    <td><input type="text" class="form-control" value="{{store.name}}"  name="name_{{store.id}}" required></td>
+                                    <td><button data-repeater-delete type="button" class="btn btn-danger btn-sm">Remove</button></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <br>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> 
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('body').on('click', '[data-repeater-create]', function() {
+            var newRow = $('[data-repeater-item]:first').clone();
+            newRow.find('input, select').val(''); 
+            newRow.appendTo('[data-repeater-list]');
+        });
+    
+        $('body').on('click', '[data-repeater-delete]', function() {
+            $(this).closest('[data-repeater-item]').remove(); 
+        });
+    });
+    
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "lengthChange": true,
+            "searching": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+        }).buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,195 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}MS NONO INVESTMENT{% endblock %}</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{% static 'vendors/feather/feather.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendors/mdi/css/materialdesignicons.min.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendors/ti-icons/css/themify-icons.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendors/typicons/typicons.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendors/simple-line-icons/css/simple-line-icons.css' %}" />
+  <link rel="stylesheet" href="{% static 'vendors/css/vendor.bundle.base.css' %}" />
+  <!-- endinject -->
+
+<!-- Plugin css for this page -->
+<link rel="stylesheet" href="{% static 'vendors/datatables.net-bs4/dataTables.bootstrap4.css' %}" />
+<link rel="stylesheet" href="{% static 'js/select.dataTables.min.css' %}" />
+<!-- End plugin css for this page -->
+
+<!-- inject:css -->
+<link rel="stylesheet" href="{% static 'css/vertical-layout-light/style.css' %}" />
+<!-- endinject -->
+
+<link rel="icon" type="image/png" width="150" sizes="160x250" href="{% static '/images/nono.png' %}" />
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Include jQuery (only once, before plugins that depend on it) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Include jQuery Repeater -->
+<script src="https://cdn.jsdelivr.net/npm/jquery.repeater@1.2.1/jquery.repeater.min.js"></script>
+
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- DataTables Buttons JS (if you want export/print buttons) -->
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
+
+</head>
+
+<body>
+  <div class="container-scroller">
+    {% include 'navbar.html' %}
+    <div class="container-fluid page-body-wrapper">
+      {% include 'right-sidebar.html' %}
+      {% include 'link.html' %}
+      {% block content %} {% endblock %}
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
+  <!-- Embed the serialized messages as JSON -->
+  <script id="messages-data" type="application/json">
+    {{ messages_json|safe }}
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Retrieve and parse the JSON data from the script tag
+        var messagesElement = document.getElementById('messages-data');
+        var messages = JSON.parse(messagesElement.textContent);
+
+        console.log('Messages:', messages);
+
+        if (messages && messages.length > 0) {
+            messages.forEach(function(message) {
+                const icon = message.tags === "error" ? "error" :
+                            message.tags === "success" ? "success" :
+                            message.tags === "warning" ? "warning" :
+                            message.tags === "info" ? "info" : "";
+                const title = message.tags === "error" ? "Error" :
+                              message.tags === "success" ? "Success" :
+                              message.tags === "warning" ? "Warning" :
+                              message.tags === "info" ? "Info" : "";
+
+                Swal.fire({
+                    icon: icon,
+                    title: title,
+                    text: message.message,
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: true,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: true,
+                    timer: 3000
+                });
+            });
+        } else {
+            console.log('No messages to display');
+        }
+    });
+</script>
+
+<!-- filter date -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // Get the current date
+      var today = new Date();
+      var day = ("0" + today.getDate()).slice(-2);
+      var month = ("0" + (today.getMonth() + 1)).slice(-2); // Months are zero-based
+      var year = today.getFullYear();
+      var maxDate = year + '-' + month + '-' + day;
+
+      // Set the max attribute of the date input
+      var dateInput = document.getElementById('filterDate');
+      dateInput.setAttribute('max', maxDate);
+
+      // Automatically submit the form when the date changes
+      dateInput.addEventListener('change', function() {
+          document.getElementById('dateFilterForm').submit();
+      });
+  });
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+      const seeMoreBtn = document.getElementById('see-more-btn');
+      const hiddenItems = document.querySelectorAll('#todo-list li.hidden');
+
+      seeMoreBtn.addEventListener('click', () => {
+          hiddenItems.forEach(item => item.classList.remove('hidden'));
+          seeMoreBtn.style.display = 'none'; // Hide the button after showing all items
+      });
+  });
+</script>
+
+</body>
+
+<!-- plugins:js -->
+<script src="{% static 'vendors/js/vendor.bundle.base.js' %}"></script>
+<!-- endinject -->
+
+<!-- Plugin js for this page -->
+<script src="{% static 'vendors/chart.js/Chart.min.js' %}"></script>
+<script src="{% static 'vendors/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'vendors/progressbar.js/progressbar.min.js' %}"></script>
+<!-- End plugin js for this page -->
+
+<!-- inject:js -->
+<script src="{% static 'js/off-canvas.js' %}"></script>
+<script src="{% static 'js/hoverable-collapse.js' %}"></script>
+<script src="{% static 'js/template.js' %}"></script>
+<script src="{% static 'js/settings.js' %}"></script>
+<script src="{% static 'js/todolist.js' %}"></script>
+<!-- endinject -->
+
+<!-- Custom js for this page -->
+<script src="{% static 'js/dashboard.js' %}"></script>
+<script src="{% static 'js/Chart.roundedBarCharts.js' %}"></script>
+
+<!-- jQuery (load once, before any plugins that depend on it) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+<!-- DataTables Buttons JS -->
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
+
+<!-- Flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- jQuery Repeater -->
+<script src="https://cdn.jsdelivr.net/npm/jquery.repeater@1.2.1/jquery.repeater.min.js"></script>
+
+
+
+</body>
+
+</html>

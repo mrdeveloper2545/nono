@@ -1,0 +1,385 @@
+{% extends 'index.html' %}
+{% block title %} PURCHASE MANAGEMENT {% endblock %}
+{% block content %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        {% if perms.inventory.add_purchase_order %}
+        <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">
+            Purchase Order
+        </button>
+        {% endif %}
+        {% if perms.inventory.generate_report %}
+        <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#RModal">
+            Purchase Report
+        </button>
+        {% endif %}
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">Purchased Order</h4>
+                        <div class="table-responsive">
+                            <table id="myTable" class="table table-striped table-bordered">
+                                <caption>List of Purchased Items</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">PO number</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Cost</th>
+                                        <th scope="col">Confirm Action</th>
+                                        <th scope="col">Action</th>
+                                        {% if perms.inventory.generate_invoice %}
+                                        <th scope="col">Print</th>
+                                        {% endif %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in po %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ p.order_number}}</td>
+                                            <td>
+                                                {% if p.received_date %}
+                                                    <span class="badge bg-success">Approved</span>
+                                                {% elif p.cancelled_date %}
+                                                    <span class="badge bg-danger">Cancelled</span>
+                                                {% else %}
+                                                    <span class="badge bg-warning">Pending</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ p.total_cost }}</td>
+                                            <td>
+                                                {% if not p.received_date and not p.cancelled_date %}
+                                                <a href="{% url 'purchase-order-receive' p.id %}" class="btn btn-success btn-rounded btn-fw">Approve</a>
+                                                <a href="{% url 'purchase-order-cancel' p.id %}" class="btn btn-danger btn-rounded btn-fw">Cancel</a>
+                                                {% else %}
+                                                {% if perms.inventory.view_purchase_order %}<a href="#" class="btn btn-secondary btn-rounded ti-lock" style="pointer-events: none;">{% endif %}</a>
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                              <a class="btn btn-outline-dark ti-eye" href="{% url 'detail-purchase' p.id %}"></a>
+                                            {% if perms.stock.change_purchase %}
+                                                        {% if p.received_date or p.cancelled_date %}
+                                                        <button type="button" data-bs-toggle="modal" disabled data-bs-target="#editModal{{ p.id }}" class="btn btn-outline-success ti-pencil"></button>
+                                                        {% else %}
+                                                        {% if perms.stock.change_purchase %}<button type="button" data-bs-toggle="modal" data-bs-target="#editModal{{ p.id }}" class="btn btn-outline-success ti-pencil"></button>{% endif %}
+                                                        {% endif %}
+                                                        {% if p.received_date or p.cancelled_date %}
+                                                        <a class="btn btn-outline-danger ti-trash"  href="{% url 'purchase-delete' p.id %}" onclick="return confirm('Are you sure you want to delete {{ p.order_number }}?');" style="pointer-events: none;"></a>
+                                                        {% else %}
+                                                        {% if perms.stock.delete_purchase %}<a class="btn btn-outline-danger ti-trash" href="{% url 'purchase-delete' p.id %}" onclick="return confirm('Are you sure you want to delete {{ p.order_number }}?');"></a>{% endif %}
+                                                        {% endif %}
+                                            {% endif %}
+                                            </td>
+                                            {% if perms.inventory.generate_invoice %}
+                                            <td>
+                                              <a class="btn btn-outline-dark ti-printer" href="{% url 'purchase-invoice' p.id %}"></a>
+                                            </td>
+                                            {% endif %}
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Add Purchase Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title" id="addModalLabel">Create Purchase Order</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form id="purchaseForm" action="{% url 'purchase-management' %}" method="POST">
+          {% csrf_token %}
+
+          <!-- Shared PO Fields -->
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="order_date" class="form-label">Order Date</label>
+              <input type="date" name="order_date" class="form-control" required>
+            </div>
+          </div>
+
+          <!-- Repeater for Items -->
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Supplier</th>
+                <th>Cost Price</th>
+                <th>Quantity</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody data-repeater-list="purchases">
+              <tr data-repeater-item>
+                <td>
+                  <select name="material[]" class="form-control" required>
+                    <option value="">Select Material</option>
+                    {% for material in materials %}
+                      <option value="{{ material.id }}">{{ material.name }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                <select name="vendor[]" class="form-control" required>
+                <option value="">Select Vendor</option>
+                {% for vendor in vendors %}
+                  <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+                {% endfor %}
+              </select>
+                </td>
+                <td><input type="number" name="price[]" min="0" step="0.01" class="form-control" required></td>
+                <td><input type="number" name="quantity[]" min="1" step="1" class="form-control" required></td>
+                <td>
+                  <button type="button" data-repeater-delete class="btn btn-danger btn-sm">Remove</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="mb-3">
+            <button type="button" data-repeater-create class="btn btn-outline-primary">Add More</button>
+            <button type="submit" class="btn btn-primary">Save Purchase Order</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Report Modal -->
+
+<div class="modal fade" id="RModal" tabindex="-1" aria-labelledby="RModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                    <h5 class="modal-title" id="RModalLabel">Purchase Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id='Dateform' action="{% url 'purchase-report-management' %}" method="post">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col-md-6">
+                    <label>Start Date:</label>
+                    <input type="date" class="form-control" name="start_date">
+                  </div>
+                  <div class="col-md-6">
+                    <label>End Date:</label>
+                    <input type="date" class="form-control" name="end_date">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-mb-3">
+                    <label for="format">Download Format:</label>
+                    <select name="format" id="format" class="form-control">
+                      <option value="pdf">PDF</option>
+                      <option value="excel">Excel</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="col-mb-3 mt-2">
+                  <button type="submit" class="btn btn-primary">Download Report</button>
+                </div>
+                
+            </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- EditModal -->
+ {% for p in po %}
+<div class="modal fade" id="editModal{{ p.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ p.id }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <form method="POST" action="{% url 'purchase-update' p.id %}">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel{{ p.id }}">{{ p.order_number }}</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="order_date_{{ p.id }}" class="form-label">Order Date</label>
+            <input type="date" id="order_date_{{ p.id }}" name="order_date" class="form-control" value="{{ p.order_date|date:'Y-m-d' }}">
+          </div>
+
+
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Vendor</th>
+                <th>Material</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="items-table-body-{{ p.id }}">
+              {% for item in p.items.all %}
+              <tr>
+                <input type="hidden" name="item_id[]" value="{{ item.id }}">
+                <td>
+                  <select name="vendor[]" class="form-control" required>
+                    <option value="">Select vendor</option>
+                    {% for vendor in vendors %}
+                    <option value="{{ vendor.id }}" {% if vendor.id == item.vendor.id %}selected{% endif %}>{{ vendor.name }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <select name="material[]" class="form-control" required>
+                    <option value="">Select material</option>
+                    {% for material in materials %}
+                    <option value="{{ material.id }}" {% if material.id == item.material.id %}selected{% endif %}>{{ material.name }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td>
+                  <input type="number" name="quantity[]" min="1" value="{{ item.quantity }}" class="form-control" required>
+                </td>
+                <td>
+                  <input type="number" name="price[]" min="0" step="0.01" value="{{ item.price }}" class="form-control" required>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-danger btn-sm btn-remove-row">Remove</button>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <button type="button" class="btn btn-outline-primary" id="add-row-btn-{{ p.id }}">Add More</button>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-success">Save Changes</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Hidden template for new row -->
+<table style="display:none;">
+  <tbody>
+    <tr id="new-row-template-{{ p.id }}">
+      <input type="hidden" name="item_id[]" value="">
+      <td>
+        <select name="vendor[]" class="form-control" required>
+          <option value="">Select vendor</option>
+          {% for vendor in vendors %}
+          <option value="{{ vendor.id }}">{{ vendor.name }}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td>
+        <select name="material[]" class="form-control" required>
+          <option value="">Select material</option>
+          {% for material in materials %}
+          <option value="{{ material.id }}">{{ material.name }}</option>
+          {% endfor %}
+        </select>
+      </td>
+      <td>
+        <input type="number" name="quantity[]" min="1" value="1" class="form-control" required>
+      </td>
+      <td>
+        <input type="number" name="price[]" min="0" step="0.01" value="0.00" class="form-control" required>
+      </td>
+      <td>
+        <button type="button" class="btn btn-danger btn-sm btn-remove-row">Remove</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const pId = '{{ p.id }}';
+    const addBtn = document.getElementById('add-row-btn-' + pId);
+    const tbody = document.getElementById('items-table-body-' + pId);
+    const template = document.getElementById('new-row-template-' + pId);
+
+    addBtn.addEventListener('click', function () {
+      const clone = template.cloneNode(true);
+      clone.removeAttribute('id');
+      clone.style.display = '';
+      tbody.appendChild(clone);
+    });
+
+    tbody.addEventListener('click', function (e) {
+      if (e.target.classList.contains('btn-remove-row')) {
+        e.target.closest('tr').remove();
+      }
+    });
+  });
+</script>
+
+{% endfor %}
+
+
+<!-- TableData -->
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "lengthChange": true,
+            "searching": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+        }).buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
+    });
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        $('body').on('click', '[data-repeater-create]', function() {
+            var newRow = $('[data-repeater-item]:first').clone();
+            newRow.find('input, select').val(''); 
+            newRow.appendTo('[data-repeater-list]');
+        });
+    
+        $('body').on('click', '[data-repeater-delete]', function() {
+            $(this).closest('[data-repeater-item]').remove(); 
+        });
+    });
+    
+</script>
+
+{% endblock %}

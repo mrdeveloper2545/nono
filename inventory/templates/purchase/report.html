@@ -1,0 +1,112 @@
+<!-- templates/purchase_report_pdf.html -->
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Purchase Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .report-header h2, .report-header h3 {
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+        }
+
+        th, td {
+            border: 1px solid rgb(0, 0, 0);
+            padding: 10px;
+            text-align: left;
+        }
+
+        thead {
+            background-color: rgb(255, 255, 255);
+            color: white;
+        }
+
+        .purchase-row {
+            background-color: #ffffff;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: rgb(255, 255, 255);
+        }
+
+        .overall-total {
+            font-size: 18px;
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    {% if purchase_orders %}
+        <div class="report-header">
+            <img src="{% static '/images/nono.png' %}" alt="logo" width="150" height="200" />        
+            <h2>Purchase Report</h2>
+            <h3>{{ start_date }} to {{ end_date }}</h3>
+        </div>
+
+        {% for order in purchase_orders %}
+            <h3>Purchase Order: {{ order.order_number }}</h3>
+            <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+            <p><strong>Status:</strong> {{ order.status|title }}</p>
+            {% if order.received_date %}
+                <p><strong>Received Date:</strong> {{ order.received_date|date:"Y-m-d" }}</p>
+            {% endif %}
+            <p><strong>Total Cost:</strong> {{ order.total_cost|commafy }} TSH</p>
+
+            <table>
+                <thead>
+                    <tr style="color: black;">
+                        <th>#</th>
+                        <th>Material</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr class="purchase-row">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.material.name }}</td>
+                        <td>{{ item.quantity|commafy }}</td>
+                        <td>{{ item.unit_price|commafy }} TSH</td>
+                        <td>{{ item.total_price|commafy }} TSH</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="4" align="right">Order Total:</td>
+                        <td>{{ order.total_cost|commafy }} TSH</td>
+                    </tr>
+                </tfoot>
+            </table>
+        {% endfor %}
+
+        <div class="overall-total">
+            <strong>Grand Total:</strong> {{ total_cost|commafy }} TSH
+        </div>
+
+    {% else %}
+        <p>No purchase orders found for the selected date range.</p>
+    {% endif %}
+
+</body>
+</html>

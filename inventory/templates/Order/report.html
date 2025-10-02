@@ -1,0 +1,67 @@
+<!-- templates/purchase_report_pdf.html -->
+{% load static %}
+{% load custom_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #c9c5c5;
+            padding: 8px;
+        }
+        th {
+            background-color: #44c0fa;
+        }
+        .logo {
+            width: 100px; /* Adjust the size as needed */
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">
+        <img src="/static/images/P1.png" alt="logo" />
+    </div>
+    {% if orders %}
+    <center>
+        <h2>Orders Report</h2>
+        <h3>{{start_date}} To {{ end_date }}</h3>
+
+        <h2>{{total_cost|commafy}} /=TSH</h2>
+    </center>
+    <table>
+        <thead>
+            <tr style="color: white;">
+                <th>Date</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for o in orders %}
+            <tr style="background-color: aqua;">
+                <td>{{ o.date }}</td>
+                <td>{{ o.name.product }}</td>
+                <td>{{ o.quantity|commafy }}</td>
+                <td>{{ o.name.price|commafy }}</td>
+                <td>{{o.order_cost|commafy}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</body>
+</html>

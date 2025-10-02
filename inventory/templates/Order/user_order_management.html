@@ -1,0 +1,276 @@
+{% extends 'index.html' %}
+{% block title %} ORDER MANAGEMENT {% endblock %}
+{% block content %}
+<!-- usersTable -->
+<div class="main-panel">
+    <div class="content-wrapper">
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Order</button>
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"><center> Order Table </center></h4>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered"  id="myTable">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Order Date</th>
+                                        <th>username</th>
+                                        <th>Product</th>
+                                        <th>Category</th>
+                                        <th>unit</th>
+                                        <th>Quantity</th>
+                                        <th>Price</th>
+                                        <th>Confirm date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>       
+                                        <th>Confirm</th>           
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in user_order %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ order.date }}</td>
+                                        <td>{{order.user.username}}</td>
+                                        <td>{{ order.name.name }}</td>
+                                        <td>{{ order.name.category.name }}</td>
+                                        <td>{{ order.name.unit.name }}</td>
+                                        <td>{{ order.quantity }}</td>
+                                        <td>{{ order.price }}</td>
+                                        <td></td>
+                                        <td>{{ order.status }}</td>
+                                        <td>
+                                            <button type="button" data-bs-toggle="modal"  data-bs-target="#editModal{{ order.id }}" class="btn btn-outline-success ti-pencil"></button>
+                                            <a class="btn btn-outline-danger ti-trash" href="{% url 'delete-order' order.id %}" onclick="return confirm('Are you sure you want to delete order with id #{{ order.id }}?');"></a>
+                                        </td>
+                                        {% comment %}
+                                        <td>
+                                            <div id="purchase-buttons-{{ purchase.id }}">
+                                                {% if not purchase.received_date and not purchase.cancelled_date %}
+                                                <!-- Receive Button -->
+                                                {% if perms.stock.receive_purchase %}
+                                                <a id="receiveButton-{{ purchase.id }}"class="btn btn-success btn-rounded btn-fw"href="{% url 'received-purchase' purchase.id %}"onclick="return handleConfirmation({{ purchase.id }}, '{{ purchase.name }}', 'receive');">Receive</a>
+                                                {% endif %}
+                                                <!-- Cancel Button -->
+                                                {% if perms.stock.cancel_purchase %} 
+                                                <a id="cancelButton-{{ purchase.id }}"class="btn btn-danger btn-rounded btn-fw"href="{% url 'cancelled-purchase' purchase.id %}"onclick="return handleConfirmation({{ purchase.id }}, '{{ purchase.name }}', 'cancel');"> Cancel</a>
+                                                {% endif %}
+                                                {% elif purchase.received_date %}
+                                                <!-- Received Button -->
+                                                {% if perms.stock.receive_purchase %}
+                                                <a id="receiveButton-{{ purchase.id }}"class="btn btn-secondary btn-rounded btn-fw"href="#"onclick="return false;">Received
+                                                </a>
+                                                {% endif %}
+                                                {% elif purchase.cancelled_date %}
+                                                {% if perms.stock.cancel_purchase %}
+                                                <a id="cancelButton-{{ purchase.id }}"class="btn btn-secondary btn-rounded btn-fw"href="#"onclick="return false;">Cancelled</a>
+                                                {% endif %}
+                                                {% endif %}
+                                            </div>                                              
+                                        </td>
+                                        {% endcomment %}
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Order Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Order Product</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'order-management' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="user">username</label>
+                                    <select name="user" id="user_id" class="form-control">
+                                        <option value="">select user</option>
+                                        {% for user in users %}
+                                        <option value="{{user.id}}">{{user.username}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">product</label>
+                                    <select name="name" id="name_id" class="form-control">
+                                        <option value="">select product</option>
+                                        {% for purchase in purchases %}
+                                        <option value="{{purchase.id}}">{{purchase.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price_variation" class="form-label">Price</label>
+                                    <input type="number" min="1" step="0.01" name="price" id="price_id" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Quantity</label>
+                                    <input type="number"   name="quantity" id="quantity_id" min="1" step="0.01" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Order Modal -->
+{% for order in orders %}
+<div class="modal fade" id="editModal{{ order.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ purchase.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel{{ order.id }}">ordered by: {{order.user.username}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'update-order' order.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Product</label>
+                                    <input type="text" name="name" value="{{ order.name.name }}" id="name_id" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Category</label>
+                                    <input type="text" name="category" value="{{ order.name.category.name }}" id="category.id" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price_variation" class="form-label"> Price</label>
+                                    <input type="number" name="price" value="{{ order.price }}" id="price_id" class="form-control">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Quantity</label>
+                                    <input type="number" type="any" name="quantity" value="{{ order.quantity }}" id="quantity.id" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> 
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "lengthChange": true,
+            "searching": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+        }).buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var quantityInput = document.getElementById('quantity_id');
+
+        quantityInput.addEventListener('input', function () {
+            var value = parseFloat(quantityInput.value);
+            if (isNaN(value) || value < 1) {
+                // Handle invalid input
+                quantityInput.setCustomValidity('Quantity must be a number greater than or equal to 1.');
+            } else {
+                quantityInput.setCustomValidity('');
+            }
+        });
+    });
+</script>
+
+<script>
+    function handleConfirmation(purchaseId, purchaseName, action) {
+        if (confirm('Are you sure you want to ' + (action === 'receive' ? 'receive ' : 'cancel ') + purchaseName + '?')) {
+            // Get the buttons container
+            var buttonsContainer = document.getElementById('purchase-buttons-' + purchaseId);
+            
+            // Hide all buttons initially
+            var buttons = buttonsContainer.getElementsByTagName('a');
+            for (var i = 0; i < buttons.length; i++) {
+                buttons[i].style.display = 'none';
+            }
+    
+            // Get the relevant button and show it with status
+            var relevantButton = document.getElementById(action + 'Button-' + purchaseId);
+            if (relevantButton) {
+                relevantButton.innerHTML = action === 'receive' ? 'Received' : 'Cancelled';
+                relevantButton.classList.remove(action === 'receive' ? 'btn-success' : 'btn-danger');
+                relevantButton.classList.add('btn-secondary');
+                relevantButton.style.pointerEvents = 'none'; // Disable further click events
+                relevantButton.style.display = 'inline-block'; // Ensure button is visible
+            }
+    
+            // Remove the other button from DOM
+            var otherAction = action === 'receive' ? 'cancel' : 'receive';
+            var otherButton = document.getElementById(otherAction + 'Button-' + purchaseId);
+            if (otherButton) {
+                otherButton.remove();
+            }
+    
+            // Proceed with navigation
+            setTimeout(function() {
+                window.location.href = relevantButton ? relevantButton.getAttribute('href') : '#';
+            }, 100); // Short delay before navigation
+    
+            return false; // Stop the default link behavior
+        } else {
+            return false; // Prevent navigation if the action is canceled
+        }
+    }
+    
+</script>
+
+{% endblock %}

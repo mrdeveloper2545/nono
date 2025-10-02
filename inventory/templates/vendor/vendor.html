@@ -1,0 +1,201 @@
+{% extends 'index.html' %}
+{% block title %} VENDOR MANAGEMENT {% endblock %}
+{% block content %}
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Add Vendors</button>
+        {% if perms.can_bulk_update_vendor %}<button type="button" class="btn btn-outline-dark mb-3" data-bs-toggle="modal" data-bs-target="#BulkModal">Bulk Update</button>{% endif %}
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"><center> VENDOR LIST </center></h4>
+                        <div class="table-responsive">
+                            <table id="myTable" class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Phone Phone_number</th>
+                                        <th>Action</th>                  
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for vendor in vendors %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ vendor.name }}</td>
+                                        <td>{{ vendor.phone_number }}</td>
+                                        <td>
+                                            {% if perms.stock.change_vendor %}<button type="button" data-bs-toggle="modal" data-bs-target="#editModal{{vendor.id}}" class="btn btn-outline-success ti-pencil"></button>{% endif %}
+                                            {% if perms.stock.delete_vendor %}<a class="btn btn-outline-danger ti-trash" href="{% url 'delete-vendor' vendor.id %}" onclick="return confirm ('Are you sure you want to delete  {{vendor.name}}');"></a>{% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Vendor Form</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="materialForm" action="{% url 'vendor-management' %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone_number</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody data-repeater-list="vendors">
+                                <tr data-repeater-item>
+                                    <td><input type="text" class="form-control" name="name[]" required></td>
+                                    <td><input type="text" class="form-control" name="phone_number[]" required></td>
+                                    <td><button data-repeater-delete type="button" class="btn btn-danger btn-sm">Remove</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <button data-repeater-create type="button" class="btn btn-outline-primary">Add More</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Modal -->
+{% for vendor in vendors %}
+<div class="modal fade" id="editModal{{vendor.id}}" tabindex="-1" aria-labelledby="editModalLabel{{vendor.id}}" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel{{vendor.id}}">{{vendor.name}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="materialForm" action="{% url 'update-vendor' vendor.id %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone_number</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody data-repeater-list="vendors">
+                                <tr data-repeater-item>
+                                    <td><input type="text" class="form-control" value="{{vendor.name}}" name="name" required></td>
+                                    <td><input type="text" class="form-control" value="{{vendor.phone_number}}" name="phone_number" required></td>
+                                    <td><button data-repeater-delete type="button" class="btn btn-danger btn-sm">Remove</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br>
+                        <button data-repeater-create type="button" class="btn btn-outline-primary">Add More</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Bulk Update Modal -->
+<div class="modal fade" id="BulkModal" tabindex="-1" aria-labelledby="BulkModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="BulkModalLabel">Bulk Update</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="materialForm" action="{% url 'bulk-vendor-update' %}" method="POST">
+                    {% csrf_token %}
+                    <div>
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone_number</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            {% for vendor in vendors %}
+                            <tbody data-repeater-list="vendors">
+                                <tr data-repeater-item>
+                                    <td><input type="text" class="form-control" value="{{vendor.name}}" name="name_{{vendor.id}}" required></td>
+                                    <td><input type="text" class="form-control" value="{{vendor.phone_number}}" name="phone_number_{{vendor.id}}" required></td>
+                                    <td><button data-repeater-delete type="button" class="btn btn-danger btn-sm">Remove</button></td>
+                                </tr>
+                            </tbody>
+                            {% endfor %}
+                        </table>
+                        <br>
+                        <button data-repeater-create type="button" class="btn btn-outline-primary">Add More</button>
+                        <button type="submit" class="btn btn-primary">Bulk Update</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+        $('body').on('click', '[data-repeater-create]', function() {
+            var newRow = $('[data-repeater-item]:first').clone();
+            newRow.find('input, select').val(''); 
+            newRow.appendTo('[data-repeater-list]');
+        });
+    
+        $('body').on('click', '[data-repeater-delete]', function() {
+            $(this).closest('[data-repeater-item]').remove(); 
+        });
+    });
+    
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "lengthChange": true,
+            "searching": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+        }).buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
+    });
+</script>
+{% endblock %}

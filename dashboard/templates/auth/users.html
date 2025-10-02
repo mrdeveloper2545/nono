@@ -1,0 +1,241 @@
+{% extends 'index.html' %}
+{% block title %} USER MANAGEMENT {% endblock %}
+{% block content %}
+<!-- Users List -->
+<div class="main-panel">
+    <div class="content-wrapper">
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">Add User</button>
+        <div class="row">
+            <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">USERS LIST</h4>
+                        <div class="table-responsive">
+                            <table id="myTable" class="table table-striped" >
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>ROLE type</th>
+                                        <th>Action</th>
+                                        <th>Role</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td>{{ user.first_name }}</td>
+                                        <td>{{ user.last_name }}</td>
+                                        <td>{% if user.groups.all %}{% for group in user.groups.all %}{{ group.name }}{% endfor %}{% endif %}</td>
+                                        <td>
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#editModal{{ user.id }}" class="btn btn-outline-success ti-pencil"></button>
+                                            {% if perms.auth.can_delete_user %}
+                                            <a class="btn btn-outline-danger ti-trash" href="{% url 'delete-user' user.id %}"></a>
+                                            {% endif %}
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#viewModal{{ user.id }}" class="btn btn-outline-secondary ti-eye"></button>
+                                        </td>
+                                        <td>
+                                            <button type="button" data-bs-toggle="modal" data-bs-target="#roleModal{{user.id}}" class="btn btn-outline-primary ti-briefcase"></button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'register' %}" method="POST">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" name="username" id="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" name="first_name" id="first_name_id" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" name="last_name" id="last_name_id" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" id="email" >
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="password" class="form-label">Password</label>
+                                <input type="password" name="password" class="form-control" id="password" >
+                            </div>
+                            <div class="col-md-6">
+                                <label for="password2" class="form-label">Confirm Password</label>
+                                <input type="password" name="password2" class="form-control" id="password2">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update User Modal -->
+{% for user in users %}
+<div class="modal fade" id="editModal{{ user.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ user.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel{{ user.id }}">{{ user.username }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'update-user' user.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" class="form-control" name="username" value="{{ user.username }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" name="email" value="{{ user.email }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="first_name" class="form-label">First Name</label>
+                                    <input type="text" class="form-control" name="first_name" value="{{ user.first_name }}">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="last_name" class="form-label">Last Name</label>
+                                    <input type="text" class="form-control" name="last_name" value="{{ user.last_name }}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="is_active" class="form-label">Active</label>
+                                        <input type="checkbox" name="is_active" id="is_active" {% if user.is_active %} checked {% endif %}>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="is_staff" class="form-label">Staff</label>
+                                        <input type="checkbox" name="is_staff" id="is_staff" {% if user.is_staff %} checked {% endif %}>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="is_superuser" class="form-label">Superuser</label>
+                                        <input type="checkbox" name="is_superuser" id="is_superuser" {% if user.is_superuser %} checked {% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- View User Modal -->
+{% for user in users %}
+<div class="modal fade" id="viewModal{{ user.id }}" tabindex="-1" aria-labelledby="viewModalLabel{{ user.id }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewModalLabel{{ user.id }}">{{ user.username }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>Username:</strong> {{ user.username }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+                <p><strong>First Name:</strong> {{ user.first_name }}</p>
+                <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+                <p><strong>Active:</strong> {{ user.is_active }}</p>
+                <p><strong>Staff:</strong> {{ user.is_staff }}</p>
+                <p><strong>Superuser:</strong> {{ user.is_superuser }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% for user in users %}
+<div class="modal fade" id="roleModal{{user.id}}" tabindex="-1" aria-labelledby="roleModal{{user.id}}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="roleModal{{user.id}}">{{user.username}}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{% url 'user-role' user.id %}" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <select name="group" class="form-control" id="group.id">
+                                    <option value="">select role</option>
+                                    {% for group in groups %}
+                                    <option value="{{ group.id }}">{{group.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3">save</button>
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "lengthChange": true,
+            "searching": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+        }).buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
+    });
+</script>
+
+{% endblock %}

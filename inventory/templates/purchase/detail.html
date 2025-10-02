@@ -1,0 +1,80 @@
+{% extends 'index.html' %}
+{% block title %} PURCHASE MANAGEMENT {% endblock %}
+{% block content %}
+<!-- usersTable -->
+ 
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+        <div class="col-lg-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title"><center> #{{po.order_number}}</center></h4>
+                    <form id="purchaseForm" action="#" method="#">
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                    <label for="order_date" class="form-label">Order Date</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input  name="order_date" value="{{po.order_date|date:'Y-m-d'}}" class="form-control" required>
+                                    </div>
+                                </div>
+                                <table class="table table-bordered">
+                                    <thead>
+                                            <tr>
+                                                <th>Material</th>
+                                                <th>Supplier</th>
+                                                <th>Cost Price</th>
+                                                <th>Quantity</th>
+                                                <th>Action</th>
+                                            </tr>
+                                    </thead>
+                                    {% for p in po.items.all %}
+                                    <tbody data-repeater-list="purchases">
+                                            <tr data-repeater-item>
+                                                <td>
+                                                    <input value="{{p.material.name}}"  class="form-control">
+                                                </td>
+                                                <td>
+                                                    <input value="{{p.vendor.name}}" class="form-control">
+                                                </td>
+                                                <td>
+                                                    <input value="{{p.unit_price}}" class="form-control">
+                                                </td>
+                                                <td>
+                                                    <input value="{{p.quantity}}" class="form-control">
+                                                </td>
+                                                <td>
+                                                <button type="button" data-repeater-delete class="btn btn-danger btn-sm">Remove</button>
+                                                </td>
+                                            </tr>
+                                    </tbody>
+                                    {% endfor %}
+                                </table>
+                    </form><br>
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <a class="btn btn-outline-primary" href="{% url 'purchase-management' %}">back</a>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#myTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "lengthChange": true,
+            "searching": true,
+            "info": true,
+            "autoWidth": true,
+            "responsive": true,
+        }).buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
+    });
+</script>
+{% endblock %}

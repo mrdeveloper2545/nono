@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial; font-size: 12px; }
+        h1 { text-align: center; }
+        h2 { margin-top: 25px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+        th, td { border: 1px solid black; padding: 5px; }
+        th { background-color: #f2f2f2; }
+        .right { text-align: right; }
+        .bold { font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<table style="border:0;">
+<tr style="border:0;">
+<td style="border:0;">
+<img src="{% static 'images/system-logo.png' %}" width="120">
+</td>
+<td style="border:0; text-align:right;">
+<h1>Financial Report</h1>
+<p>From {{ start_date }} To {{ end_date }}</p>
+</td>
+</tr>
+</table>
+
+<h2>Expenses</h2>
+<table>
+<tr><th>Service</th><th>Total</th></tr>
+{% for e in expenses %}
+<tr>
+<td>{{ e.name }}</td>
+<td class="right">{{ e.total|floatformat:2 }}</td>
+</tr>
+{% endfor %}
+<tr class="bold">
+<td>Grand Total</td>
+<td class="right">{{ grand_total|floatformat:2 }}</td>
+</tr>
+</table>
+
+<h2>Wholesale Revenue</h2>
+<table>
+<tr>
+<th>Product</th><th>Qty</th><th>Purchase</th>
+<th>Wholesale</th><th>COGS</th>
+<th>Revenue</th><th>Profit</th>
+</tr>
+{% for p in wholesale %}
+<tr>
+<td>{{ p.name }}</td>
+<td class="right">{{ p.quantity }}</td>
+<td class="right">{{ p.purchase_price|floatformat:2 }}</td>
+<td class="right">{{ p.selling_price|floatformat:2 }}</td>
+<td class="right">{{ p.cogs|floatformat:2 }}</td>
+<td class="right">{{ p.revenue|floatformat:2 }}</td>
+<td class="right">{{ p.profit|floatformat:2 }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Retail Revenue</h2>
+<table>
+<tr>
+<th>Product</th><th>Qty</th><th>Purchase</th>
+<th>Retail</th><th>COGS</th>
+<th>Revenue</th><th>Profit</th>
+</tr>
+{% for p in retail %}
+<tr>
+<td>{{ p.name }}</td>
+<td class="right">{{ p.quantity }}</td>
+<td class="right">{{ p.purchase_price|floatformat:2 }}</td>
+<td class="right">{{ p.selling_price|floatformat:2 }}</td>
+<td class="right">{{ p.cogs|floatformat:2 }}</td>
+<td class="right">{{ p.revenue|floatformat:2 }}</td>
+<td class="right">{{ p.profit|floatformat:2 }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h2>Financial Summary</h2>
+<table>
+<tr><th>Metric</th><th>Amount</th></tr>
+<tr><td>Total Revenue</td><td class="right">{{ total_revenue|floatformat:2 }}</td></tr>
+<tr><td>Total COGS</td><td class="right">{{ total_cogs|floatformat:2 }}</td></tr>
+<tr><td>Total Profit</td><td class="right">{{ total_profit|floatformat:2 }}</td></tr>
+<tr><td>Total Expenses</td><td class="right">{{ grand_total|floatformat:2 }}</td></tr>
+<tr class="bold"><td>Net Profit</td><td class="right">{{ net_profit|floatformat:2 }}</td></tr>
+</table>
+
+</body>
+</html>

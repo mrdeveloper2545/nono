@@ -11,6 +11,7 @@ from django.db.models import Sum
 # Create your models here.
 
 class Unit(models.Model):
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
     name=models.CharField(max_length=50)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
@@ -19,6 +20,7 @@ class Unit(models.Model):
         return self.name
 
 class Category(models.Model):
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
@@ -29,6 +31,7 @@ class Category(models.Model):
         return self.name
 
 class Material(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     category = models.ForeignKey(Category, on_delete=models.CASCADE,)
     unit = models.ForeignKey(Unit, on_delete=models.CASCADE,)
@@ -53,6 +56,7 @@ class Vendor (models.Model):
             ]
     
 class PurchaseOrder(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_number = models.CharField(max_length=200, unique=True)
     order_date = models.DateField()
     expected_delivery_date = models.DateField(blank=True, null=True)
@@ -131,6 +135,7 @@ class PurchaseOrder(models.Model):
 
 
 class PurchaseItem(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     purchase_order = models.ForeignKey(PurchaseOrder, on_delete=models.CASCADE, related_name='items')
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE, related_name='items')
     material = models.ForeignKey(Material, on_delete=models.CASCADE)
@@ -170,6 +175,7 @@ class PurchaseItem(models.Model):
 
 
 class Product(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.OneToOneField(Material, on_delete=models.CASCADE, related_name='product',)
     retail_price = models.DecimalField(max_digits=10, decimal_places=2)
     wholesale_price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -276,6 +282,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
+    user=models.ForeignKey(User, on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='order_items')
     quantity = models.PositiveIntegerField()
@@ -290,8 +297,16 @@ class OrderItem(models.Model):
         order.update_total()
 
     def __str__(self):
-        return f"{self.quantity} x {self.product} for {self.order}"
+            return f"{self.quantity} x {self.product} for {self.order}"
+            
+    @property
+    def unit_price(self):
+            return self.product.retail_price if self.order.order_type == 'retail' else self.product.wholesale_price
 
+
+    @property
+    def total_cost(self):
+        return self.unit_price * self.quantity
 
 
 

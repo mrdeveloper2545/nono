@@ -1,0 +1,42 @@
+{% load custom_filters %}
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: left; }
+        th { background-color: #eee; }
+        tfoot { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <center>
+        <h2>Expenses Report</h2>
+        <p>From: {{ start_date }} To: {{ end_date }}</p>
+    </center>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Service</th>
+                <th>Total Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for s in daily_service_totals %}
+            <tr>
+                <td>{{ s.date }}</td>
+                <td>{{ s.expenses_name__name }}</td>
+                <td>{{ s.total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="2">Grand Total</td>
+                <td>{{ grand_total }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

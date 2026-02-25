@@ -108,24 +108,39 @@
         </div>
       </li>
       {% endif %}
-<!-- {% comment %}
       {% if settings.accounting %}
       <li class="nav-item nav-category">ACCOUNTING MANAGEMENT</li>
       <li class="nav-item">
-        <a class="nav-link" data-bs-toggle="collapse" href="#report" aria-expanded="false" aria-controls="report">
+        <a class="nav-link" data-bs-toggle="collapse" href="#expenses" aria-expanded="false" aria-controls="expenses">
           <i class="menu-icon mdi mdi-poll"></i>
           <span class="menu-title">BILLING</span>
           <i class="menu-arrow"></i>
         </a>
-        <div class="collapse" id="report">
+        <div class="collapse" id="expenses">
           <ul class="nav flex-column sub-menu">
             <li class="nav-item"> <a class="nav-link" href="{% url 'service-management' %}"> SERVICE </a></li>
             <li class="nav-item"> <a class="nav-link" href="{% url 'expenses-management' %}"> EXPENSES </a></li>
           </ul>
         </div>
       </li>
-      {% endif %} -->
-      <!-- {% endcomment %} -->
+      <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="collapse" href="#report" aria-expanded="false" aria-controls="report">
+          <i class="menu-icon mdi mdi-export"></i>
+          <span class="menu-title">Financial Report</span>
+          <i class="menu-arrow"></i>
+        </a>
+        <div class="collapse" id="report">
+          <ul class="nav flex-column sub-menu">
+           <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#reportModal">Final summary</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#unsoldStockModal">Stock</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      {% endif %} 
       <li class="nav-item nav-category">SETTINGS</li>
       <li class="nav-item">
         <a class="nav-link" data-bs-toggle="collapse" href="#settings" aria-expanded="false" aria-controls="settings">

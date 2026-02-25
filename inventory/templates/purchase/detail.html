@@ -77,4 +77,19 @@
         }).buttons().container().appendTo('#myTable_wrapper .col-md-6:eq(0)');
     });
 </script>
+
+<script>
+    $(document).ready(function() {
+        $('body').on('click', '[data-repeater-create]', function() {
+            var newRow = $('[data-repeater-item]:first').clone();
+            newRow.find('input, select').val(''); 
+            newRow.appendTo('[data-repeater-list]');
+        });
+    
+        $('body').on('click', '[data-repeater-delete]', function() {
+            $(this).closest('[data-repeater-item]').remove(); 
+        });
+    });
+    
+</script>
 {% endblock %}

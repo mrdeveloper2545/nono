@@ -56,7 +56,7 @@
 
     {% if purchase_orders %}
         <div class="report-header">
-            <img src="{% static '/images/nono.png' %}" alt="logo" width="150" height="200" />        
+            <img src="{% static '/images/system-logo.png' %}" alt="logo" width="150" height="200" />        
             <h2>Purchase Report</h2>
             <h3>{{ start_date }} to {{ end_date }}</h3>
         </div>
@@ -68,8 +68,6 @@
             {% if order.received_date %}
                 <p><strong>Received Date:</strong> {{ order.received_date|date:"Y-m-d" }}</p>
             {% endif %}
-            <p><strong>Total Cost:</strong> {{ order.total_cost|commafy }} TSH</p>
-
             <table>
                 <thead>
                     <tr style="color: black;">

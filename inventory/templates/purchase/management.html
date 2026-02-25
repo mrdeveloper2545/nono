@@ -180,33 +180,35 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <form id='Dateform' action="{% url 'purchase-report-management' %}" method="post">
+              <form id='Dateform' action="{% url 'order-report-management' %}" method="post">
                 {% csrf_token %}
-                <div class="row">
-                  <div class="col-md-6">
-                    <label>Start Date:</label>
-                    <input type="date" class="form-control" name="start_date">
-                  </div>
-                  <div class="col-md-6">
-                    <label>End Date:</label>
-                    <input type="date" class="form-control" name="end_date">
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-mb-3">
-                    <label for="format">Download Format:</label>
-                    <select name="format" id="format" class="form-control">
-                      <option value="pdf">PDF</option>
-                      <option value="excel">Excel</option>
-                    </select>
+                <div class="form-group">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label>Start Date:</label>
+                      <input type="date" class="form-control" name="start_date" required>
+                    </div>
+                    <div class="col-md-6">
+                      <label>End Date:</label>
+                      <input type="date" class="form-control" name="end_date" required>
+                    </div>
                   </div>
                 </div>
-                
+                <div class="form-group">
+                  <div class="row mb-3">
+                    <div class="col">
+                      <label for="format">Download Format:</label>
+                      <select name="format" id="format" class="form-control">
+                        <option value="pdf">PDF</option>
+                        <option value="excel">Excel</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
                 <div class="col-mb-3 mt-2">
                   <button type="submit" class="btn btn-primary">Download Report</button>
-                </div>
-                
-            </form>
+                </div>   
+              </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -216,25 +218,26 @@
 </div>
 
 
-<!-- EditModal -->
- {% for p in po %}
+{% for p in po %}
 <div class="modal fade" id="editModal{{ p.id }}" tabindex="-1" aria-labelledby="editModalLabel{{ p.id }}" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <form method="POST" action="{% url 'purchase-update' p.id %}">
       {% csrf_token %}
+      <input type="hidden" name="delete_order" value="0" id="delete_order_input_{{ p.id }}">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="editModalLabel{{ p.id }}">{{ p.order_number }}</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
 
         <div class="modal-body">
+          <!-- Order Date -->
           <div class="mb-3">
             <label for="order_date_{{ p.id }}" class="form-label">Order Date</label>
             <input type="date" id="order_date_{{ p.id }}" name="order_date" class="form-control" value="{{ p.order_date|date:'Y-m-d' }}">
           </div>
 
-
+          <!-- Items Table -->
           <table class="table table-bordered">
             <thead>
               <tr>
@@ -265,26 +268,23 @@
                     {% endfor %}
                   </select>
                 </td>
-                <td>
-                  <input type="number" name="quantity[]" min="1" value="{{ item.quantity }}" class="form-control" required>
-                </td>
-                <td>
-                  <input type="number" name="price[]" min="0" step="0.01" value="{{ item.price }}" class="form-control" required>
-                </td>
-                <td>
-                  <button type="button" class="btn btn-danger btn-sm btn-remove-row">Remove</button>
-                </td>
+                <td><input type="number" name="quantity[]" min="1" value="{{ item.quantity }}" step="1" class="form-control" required></td>
+                <td><input type="number" name="price[]" min="0" step="0.01" value="{{ item.price }}" class="form-control" required></td>
+                <td><button type="button" class="btn btn-danger btn-sm btn-remove-row">Remove</button></td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
 
-          <button type="button" class="btn btn-outline-primary" id="add-row-btn-{{ p.id }}">Add More</button>
-
+          <!-- Add More Button -->
+          <button type="button" class="btn btn-outline-primary btn-add-row" data-target="{{ p.id }}">Add New Item</button>
         </div>
 
         <div class="modal-footer">
           <button type="submit" class="btn btn-success">Save Changes</button>
+          <button type="button" class="btn btn-danger" onclick="document.getElementById('delete_order_input_{{ p.id }}').value='1'; this.closest('form').submit();">
+            Delete Order
+          </button>
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         </div>
       </div>
@@ -292,7 +292,7 @@
   </div>
 </div>
 
-<!-- Hidden template for new row -->
+<!-- Hidden Template Row -->
 <table style="display:none;">
   <tbody>
     <tr id="new-row-template-{{ p.id }}">
@@ -313,44 +313,13 @@
           {% endfor %}
         </select>
       </td>
-      <td>
-        <input type="number" name="quantity[]" min="1" value="1" class="form-control" required>
-      </td>
-      <td>
-        <input type="number" name="price[]" min="0" step="0.01" value="0.00" class="form-control" required>
-      </td>
-      <td>
-        <button type="button" class="btn btn-danger btn-sm btn-remove-row">Remove</button>
-      </td>
+      <td><input type="number" name="quantity[]" min="1" value="1" step="1" class="form-control" required></td>
+      <td><input type="number" name="price[]" min="0" step="0.01" value="0.00" class="form-control" required></td>
+      <td><button type="button" class="btn btn-danger btn-sm btn-remove-row">Remove</button></td>
     </tr>
   </tbody>
 </table>
-
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const pId = '{{ p.id }}';
-    const addBtn = document.getElementById('add-row-btn-' + pId);
-    const tbody = document.getElementById('items-table-body-' + pId);
-    const template = document.getElementById('new-row-template-' + pId);
-
-    addBtn.addEventListener('click', function () {
-      const clone = template.cloneNode(true);
-      clone.removeAttribute('id');
-      clone.style.display = '';
-      tbody.appendChild(clone);
-    });
-
-    tbody.addEventListener('click', function (e) {
-      if (e.target.classList.contains('btn-remove-row')) {
-        e.target.closest('tr').remove();
-      }
-    });
-  });
-</script>
-
 {% endfor %}
-
-
 <!-- TableData -->
 <script>
     $(document).ready(function () {

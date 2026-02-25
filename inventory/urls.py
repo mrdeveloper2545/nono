@@ -55,7 +55,16 @@ urlpatterns = [
     path('order/', OrderManagementView.as_view(), name='order-management'),
     path('order/approved/<int:id>/', ApproveOrderManagementView.as_view(), name='order-approved'),
     path('order/cancelled/<int:id>/', CancellOrderManagementView.as_view(), name='order-cancelled'),
+    path('order/detail/<int:id>/', OrderViewDetail.as_view(), name='order-detail'),
+    path('order/delete/<int:pk>/', UpdateDeleteOrder.as_view(), name='delete-order'),
+    path('order/update/<int:pk>/', UpdateDeleteOrder.as_view(), name='update-order'),
+    path('order/invoice/<int:id>/', SingleOrderReport.as_view(), name='order-invoice'),
+    path('order/report', OrderReport.as_view(), name='order-report-management'),
 
 
+
+
+    path('reports/financial/', FinancialReportView.as_view(), name='financial_report'),
+    path('unsold-stock-report/', UnsoldStockReportView.as_view(), name='unsold_stock_report'),
 
 ]

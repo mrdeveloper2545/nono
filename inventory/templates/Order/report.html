@@ -2,66 +2,111 @@
 {% load static %}
 {% load custom_filters %}
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order report</title>
+    <title>ORDER REPORT</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-
         }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .report-header h2, .report-header h3 {
+            margin: 0;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
+            margin-bottom: 40px;
         }
+
         th, td {
-            border: 1px solid #c9c5c5;
-            padding: 8px;
+            border: 1px solid rgb(0, 0, 0);
+            padding: 10px;
+            text-align: left;
         }
-        th {
-            background-color: #44c0fa;
+
+        thead {
+            background-color: rgb(255, 255, 255);
+            color: white;
         }
-        .logo {
-            width: 100px; /* Adjust the size as needed */
-            height: auto;
+
+        .purchase-row {
+            background-color: #ffffff;
+        }
+
+        .total-row {
+            font-weight: bold;
+            background-color: rgb(255, 255, 255);
+        }
+
+        .overall-total {
+            font-size: 18px;
+            text-align: right;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="logo">
-        <img src="/static/images/P1.png" alt="logo" />
-    </div>
-    {% if orders %}
-    <center>
-        <h2>Orders Report</h2>
-        <h3>{{start_date}} To {{ end_date }}</h3>
 
-        <h2>{{total_cost|commafy}} /=TSH</h2>
-    </center>
-    <table>
-        <thead>
-            <tr style="color: white;">
-                <th>Date</th>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total Cost</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for o in orders %}
-            <tr style="background-color: aqua;">
-                <td>{{ o.date }}</td>
-                <td>{{ o.name.product }}</td>
-                <td>{{ o.quantity|commafy }}</td>
-                <td>{{ o.name.price|commafy }}</td>
-                <td>{{o.order_cost|commafy}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {% if orders %}
+        <div class="report-header">
+            <img src="{% static '/images/system-logo.png' %}" alt="logo" width="150" height="200" />        
+            <h2>OrderReport</h2>
+            <h3>{{ start_date }} to {{ end_date }}</h3>
+        </div>
+
+        {% for order in orders %}
+            <h3>Order Number: {{ order.order_id }}</h3>
+            <p><strong>Order Date:</strong> {{ order.order_date }}</p>
+            <p><strong>Status:</strong> {{ order.status|title }}</p>
+            {% if order.approved_date %}
+                <p><strong>Approved Date:</strong> {{ order.approved_date|date:"Y-m-d" }}</p>
+            {% endif %}
+            <p><strong>Total Price:</strong> {{ order.total_price|commafy }} TSH</p>
+
+            <table>
+                <thead>
+                    <tr style="color: black;">
+                        <th>#</th>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Unit Price</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr class="purchase-row">
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.product.product }}</td>
+                        <td>{{ item.quantity|commafy }}</td>
+                        <td>{% if order.order_type == 'wholesale' %}{{ item.product.wholesale_price }}{% else %}{{ item.product.retail_price }}{% endif %}TSH</td>
+                        <td>{{ item.total_cost|commafy }} TSH</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="4" align="right">Order Total:</td>
+                        <td>{{ order.total_price|commafy }} TSH</td>
+                    </tr>
+                </tfoot>
+            </table>
+        {% endfor %}
+
+        <div class="overall-total">
+            <strong>Grand Total:</strong> {{ total_price|commafy }} TSH
+        </div>
+
+    {% else %}
+        <p>No orders found for the selected date range.</p>
     {% endif %}
+
 </body>
 </html>

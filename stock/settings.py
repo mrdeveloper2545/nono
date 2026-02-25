@@ -79,7 +79,7 @@ WSGI_APPLICATION = 'stock.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'nono',
+        'NAME': 'AP',
         'USER': 'root',
         'PASSWORD': 'MySQL123developer',
         'HOST': 'localhost',
@@ -119,6 +119,8 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+
 
 
 # settings.py

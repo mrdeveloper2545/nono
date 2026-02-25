@@ -10,9 +10,9 @@
         </button>
         {% endif %}
         {% if perms.inventory.generate_report %}
-        {% comment %}<button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#RModal">
-            Purchase Report
-        </button>{% endcomment %}
+        <button type="button" class="btn btn-outline-primary mb-3" data-bs-toggle="modal" data-bs-target="#RModal">
+            Order Report
+        </button>
         {% endif %}
         <div class="row">
             <div class="col-lg-12 grid-margin stretch-card">
@@ -55,15 +55,27 @@
                                                 <a href="{% url 'order-approved' p.id %}" class="btn btn-success btn-rounded btn-fw">Approve</a>
                                                 <a href="{% url 'order-cancelled' p.id %}" class="btn btn-danger btn-rounded btn-fw">Cancel</a>
                                                 {% else %}
-                                                {% if perms.inventory.view_purchase_order %}<a href="#" class="btn btn-secondary btn-rounded ti-lock" style="pointer-events: none;">{% endif %}</a>
+                                                {% if perms.inventory.view_order %}<a href="#" class="btn btn-secondary btn-rounded ti-lock" style="pointer-events: none;">{% endif %}</a>
                                                 {% endif %}
                                             </td>
                                             <td>
-                                              <a class="btn btn-outline-dark ti-eye" href="{% url 'detail-purchase' p.id %}"></a>
+                                              <a class="btn btn-outline-dark ti-eye" href="{% url 'order-detail' p.id %}"></a>
+                                              {% if perms.stock.change_order %}
+                                              {% if p.approved_date or p.cancelled_date %}
+                                              <button type="button" data-bs-toggle="modal" disabled data-bs-target="#editModal{{ p.id }}" class="btn btn-outline-success ti-pencil"></button>
+                                              {% else %}
+                                              {% if perms.inventory.change_order %}<button type="button" data-bs-toggle="modal" data-bs-target="#editModal{{ p.id }}" class="btn btn-outline-success ti-pencil"></button>{% endif %}
+                                              {% endif %}
+                                              {% if p.received_date or p.cancelled_date %}
+                                              <a class="btn btn-outline-danger ti-trash"  href="{% url 'delete-order' p.id %}" onclick="return confirm('Are you sure you want to delete {{ p.order_id }}?');" style="pointer-events: none;"></a>
+                                              {% else %}
+                                              {% if perms.stock.delete_purchase %}<a class="btn btn-outline-danger ti-trash" href="{% url 'delete-order' p.id %}" onclick="return confirm('Are you sure you want to delete {{ p.order_id }}?');"></a>{% endif %}
+                                              {% endif %}
+                                              {% endif %}
                                             </td>
                                             {% if perms.inventory.generate_invoice %}
                                             <td>
-                                              <a class="btn btn-outline-dark ti-printer" href="{% url 'purchase-invoice' p.id %}"></a>
+                                              <a class="btn btn-outline-dark ti-printer" href="{% url 'order-invoice' p.id %}"></a>
                                             </td>
                                             {% endif %}
                                         </tr>
@@ -145,8 +157,9 @@
                 </tr>
               </tbody>
             </table>
-            <br>
-            <button type="button" class="btn btn-outline-primary btn-sm" id="addRowBtn">Add Item</button>
+            <div class="mb-3">
+              <button type="button" class="btn btn-outline-primary btn-sm" id="addRowBtn">Add Item</button>
+            </div>
           </div>
 
           <!-- Submit -->
@@ -168,41 +181,225 @@
 
 
 
+<!-- UPDATEORDER -->
+{% for p in orders %}
+<div class="modal fade" id="editModal{{p.id}}" tabindex="-1" aria-labelledby="editModalLabel{{p.id}}" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="editModalLabel{{p.id}}">Edit Order  #{{p.order_id}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <form id="editOrderForm{{p.id}}" method="POST" action="{% url 'update-order' p.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="order_id" value="{{ p.id }}">
+
+          <!-- Order Type -->
+          <div class="mb-3">
+            <label class="form-label">Order Type:</label><br>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="order_type" value="wholesale" id="editWholesaleRadio{{p.id}}"
+                {% if p.order_type == 'wholesale' %}checked{% endif %} required>
+              <label class="form-check-label" for="editWholesaleRadio{{p.id}}">Wholesale</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="order_type" value="retail" id="editRetailRadio{{p.id}}"
+                {% if p.order_type == 'retail' %}checked{% endif %} required>
+              <label class="form-check-label" for="editRetailRadio{{p.id}}">Retail</label>
+            </div>
+          </div>
+
+          <!-- Order Items -->
+          <div id="editOrderItemsSection{{p.id}}">
+            <table class="table table-bordered align-middle">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Price (Auto)</th>
+                  <th>Quantity</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="editOrderItemsBody{{p.id}}">
+                {% for item in p.items.all %}
+                <tr>
+                  <td>
+                    <input type="hidden" name="item_id[]" value="{{ item.id }}">
+                    <select name="product_id[]" class="form-select product-select" required>
+                      <option value="">Select Product</option>
+                      {% for product in products %}
+                      <option value="{{ product.id }}"
+                              data-retail-price="{{ product.retail_price }}"
+                              data-wholesale-price="{{ product.wholesale_price }}"
+                              {% if product.id == item.product.id %}selected{% endif %}>
+                        {{ product.product.name }}
+                      </option>
+                      {% endfor %}
+                    </select>
+                  </td>
+                  <td>
+                    <input type="number" class="form-control item-price" step="0.01" readonly
+                      value="{% if p.order_type == 'retail' %}{{ item.product.retail_price }}{% else %}{{ item.product.wholesale_price }}{% endif %}">
+                  </td>
+                  <td>
+                    <input type="number" name="quantity[]" class="form-control" min="1" required value="{{ item.quantity }}">
+                  </td>
+                  <td>
+                    <button type="button" class="btn btn-danger btn-sm remove-row">Remove</button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+            <button type="button" class="btn btn-outline-primary btn-sm" id="editAddRowBtn{{p.id}}">Add Item</button>
+          </div>
+
+          <!-- Submit -->
+          <div class="mt-4 d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Update Order</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for this modal -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('editModal{{p.id}}');
+    modal.addEventListener('shown.bs.modal', () => {
+      initEditForm('{{p.id}}');
+    });
+  });
+
+  function initEditForm(orderId) {
+    const form = document.getElementById('editOrderForm' + orderId);
+    const itemsBody = document.getElementById('editOrderItemsBody' + orderId);
+    const addRowBtn = document.getElementById('editAddRowBtn' + orderId);
+    const orderTypeRadios = form.querySelectorAll('input[name="order_type"]');
+
+    function updatePriceForRow(row) {
+      const select = row.querySelector('.product-select');
+      const priceInput = row.querySelector('.item-price');
+      const orderType = form.querySelector('input[name="order_type"]:checked')?.value;
+      const selectedOption = select.options[select.selectedIndex];
+
+      if (orderType && selectedOption) {
+        const price = orderType === 'retail'
+          ? selectedOption.getAttribute('data-retail-price')
+          : selectedOption.getAttribute('data-wholesale-price');
+        priceInput.value = price || '';
+      }
+    }
+
+    function updateAllPrices() {
+      const rows = itemsBody.querySelectorAll('tr');
+      rows.forEach(row => updatePriceForRow(row));
+    }
+
+    // Handle order type change
+    orderTypeRadios.forEach(radio => {
+      radio.addEventListener('change', updateAllPrices);
+    });
+
+    // Handle product change
+    itemsBody.addEventListener('change', (e) => {
+      if (e.target.classList.contains('product-select')) {
+        updatePriceForRow(e.target.closest('tr'));
+      }
+    });
+
+    // Handle Add Item
+    addRowBtn.addEventListener('click', () => {
+      const firstRow = itemsBody.querySelector('tr');
+      if (!firstRow) return;
+
+      const newRow = firstRow.cloneNode(true);
+
+      // Reset values
+      newRow.querySelector('.product-select').selectedIndex = 0;
+      newRow.querySelector('.item-price').value = '';
+      newRow.querySelector('input[name="quantity[]"]').value = '';
+      const hiddenId = newRow.querySelector('input[name="item_id[]"]');
+      if (hiddenId) hiddenId.value = '';
+
+      itemsBody.appendChild(newRow);
+    });
+
+    // Handle Remove Row
+    itemsBody.addEventListener('click', (e) => {
+      if (e.target.classList.contains('remove-row')) {
+        const rows = itemsBody.querySelectorAll('tr');
+        if (rows.length > 1) {
+          e.target.closest('tr').remove();
+        }
+      }
+    });
+
+    // Initial price update
+    updateAllPrices();
+  }
+</script>
+{% endfor %}
+
+
+
+
+
 
 <!-- Report Modal -->
-{% comment %}
 <div class="modal fade" id="RModal" tabindex="-1" aria-labelledby="RModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                    <h5 class="modal-title" id="RModalLabel">Purchase Report</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="dateForm" action="{% url 'purchase-repo' %}" method="post">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label for="start_date" class="form-label">Start date</label>
-                                <input type="date" name="start_date" class="form-control" id="start_date.id" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label for="end_date" class="form-label">End date</label>
-                                <input type="date"  name="end_date" class="form-control" id="inputeDate" max="{{ today |date:'Y-m-d' }}"  required>
-                            </div>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Generate Report</button>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+                  <h5 class="modal-title" id="RModalLabel">Order Report</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id='Dateform' action="{% url 'order-report-management' %}" method="post">
+              {% csrf_token %}
+              <div class="form-group">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label>Start Date:</label>
+                    <input type="date" class="form-control" name="start_date">
+                  </div>
+                  <div class="col-md-6">
+                    <label>End Date:</label>
+                    <input type="date" class="form-control" name="end_date">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row mb-3">
+                  <div class="col">
+                    <label for="format">Download Format:</label>
+                    <select name="format" id="format" class="form-control">
+                      <option value="pdf">PDF</option>
+                      <option value="excel">Excel</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="col-mb-3 mt-2">
+                <button type="submit" class="btn btn-primary">Download Report</button>
+              </div>   
+            </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+      </div>
+  </div>
 </div>
-{% endcomment %}
+
 
 <!-- TableData -->
 <script>
@@ -299,6 +496,8 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 </script>
+
+
 
 
 

@@ -12,17 +12,6 @@
                   <div class="col-sm-12">
                     <div class="statistics-details d-flex align-items-center justify-content-between">
                       <div class="d-none d-md-block">
-                        <div class="card" style="display: inline-block;">
-                          <div class="card-header">
-                            <h3 class="card-title">USERS</h3>
-                          </div>
-                          <div class="card-body">
-                            <h3><span>{{total_user}}</span></h3>
-                            <!--<p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>-->
-                          </div>
-                        </div>
-                      </div>
-                      <div class="d-none d-md-block">
                         <div class="card">
                           <div class="card-header">
                             <h3 class="card-title">ORDERS</h3>
@@ -50,20 +39,7 @@
                           </div>
                         </div>
                       </div>
-                      <!-- <div class="d-none d-md-block">
-                        <div class="card">
-                          <div class="card-header">
-                            <h3 class="card-title">WASTAGES</h3>
-                          </div>
-                          <div class="card-body">
-                            <h3><span>{{day_wastage|commafy}}</span></h3>
-                            <p class="{% if wastage_rate > 0 %}text-success d-flex{% elif wastage_rate < 0 %}text-danger d-flex{% else %}d-flex{% endif %}">
-                              <i class="{% if wastage_rate > 0 %}mdi mdi-menu-up{% elif wastage_rate < 0 %}mdi mdi-menu-down{% endif %}"></i>
-                              <span>{% if wastage_rate > 0 %}  {% elif wastage_rate < 0 %}  {% else %} {% endif %} {{wastage_rate}}</span>
-                            </p>
-                          </div>
-                        </div>
-                      </div> -->
+
                       <div class="d-none d-md-block">
                         <div class="card">
                           <div class="card-header">
@@ -106,340 +82,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-lg-4 d-flex flex-column">
-                    <div class="row flex-grow">
-                      <div class="col-md-6 col-lg-12 grid-margin stretch-card">
-                        <div class="card bg-primary card-rounded">
-                          <div class="card-body pb-0">
-                            <h4 class="card-title card-title-dash text-white mb-4">Status Summary</h4>
-                            <div class="row">
-                              <div class="col-sm-4">
-                                <p class="status-summary-ight-white mb-1">Closed Value</p>
-                                <h2 class="text-info">357</h2>
-                              </div>
-                              <div class="col-sm-8">
-                                <div class="status-summary-chart-wrapper pb-4">
-                                  <canvas id="status-summary"></canvas>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 col-lg-12 grid-margin stretch-card">
-                        <div class="card card-rounded">
-                          <div class="card-body">
-                            <div class="row">
-                              <div class="col-sm-6">
-                                <div class="d-flex justify-content-between align-items-center mb-2 mb-sm-0">
-                                  <div class="circle-progress-width">
-                                    <div id="totalVisitors" class="progressbar-js-circle pr-2"></div>
-                                  </div>
-                                  <div>
-                                    <p class="text-small mb-2">Total Visitors</p>
-                                    <h4 class="mb-0 fw-bold">26.80%</h4>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="col-sm-6">
-                                <div class="d-flex justify-content-between align-items-center">
-                                  <div class="circle-progress-width">
-                                    <div id="visitperday" class="progressbar-js-circle pr-2"></div>
-                                  </div>
-                                  <div>
-                                    <p class="text-small mb-2">new user</p>
-                                    <h4 class="mb-0 fw-bold">10%</h4>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-lg-8 d-flex flex-column">
-                    <div class="row flex-grow">
-                      <div class="col-12 grid-margin stretch-card">
-                        <div class="card card-rounded">
-                          <div class="card-body">
-                            <div class="d-sm-flex justify-content-between align-items-start">
-                              <div>
-                                <h4 class="card-title card-title-dash">Market Overview</h4>
-                              <p class="card-subtitle card-subtitle-dash">Monthly market review</p>
-                              </div>
-                              <div>
-                                <div class="dropdown">
-                                  <button class="btn btn-secondary dropdown-toggle toggle-dark btn-lg mb-0 me-0" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Filter </button>
-                                  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
-                                    <h6 class="dropdown-header">Settings</h6>
-                                    <a class="dropdown-item" href="#">Action</a>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" href="#">Separated link</a>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="d-sm-flex align-items-center mt-1 justify-content-between">
-                              <div class="d-sm-flex align-items-center mt-4 justify-content-between"><h2 class="me-2 fw-bold"></h2><h4 class="me-2">TSH</h4><h4 class="{% if p < 0 %} text-danger {% else %} text-success {% endif %}">({{p|floatformat}})</h4></div>
-                              <div class="me-3"><div id="marketing-overview-legend"></div></div>
-                            </div>
-                            <div class="chartjs-bar-wrapper mt-3">
-                              <canvas id="marketingOverview" width="400" height="200"></canvas>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row flex-grow">
-                      <div class="col-12 grid-margin stretch-card">
-                        <div class="card card-rounded">
-                          <div class="card-body">
-                            <div class="d-sm-flex justify-content-between align-items-start">
-                              <div>
-                                <h4 class="card-title card-title-dash">Pending Orders</h4>
-                                <p class="card-subtitle card-subtitle-dash">You have {{pending}} pending order(s)</p>
-                              </div>
-                              <!-- <div>
-                                <button class="btn btn-primary btn-lg text-white mb-0 me-0" type="button"><i class="mdi mdi-account-plus"></i>Add new member</button>
-                              </div> -->
-                            </div>
-                            <div class="table-responsive  mt-1">
-                              <table class="table select-table">
-                                <thead>
-                                  <tr>
-                                    <th>
-                                      <div class="form-check form-check-flat mt-0">
-                                        <label class="form-check-label">
-                                          <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i></label>
-                                      </div>
-                                    </th>
-                                    <th>Seller</th>
-                                    <th>Product</th>
-                                    <th>Progress</th>
-                                    <th>Status</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {% for o in pending_orders %}
-                                  <tr>
-                                    <td>
-                                      <div class="form-check form-check-flat mt-0">
-                                        <label class="form-check-label">
-                                        <input type="checkbox" class="form-check-input" aria-checked="false"><i class="input-helper"></i></label>
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <div class="d-flex ">
-                                        <img src="images/faces/face1.jpg" alt="">
-                                        <div>
-                                          <h6>{{o.user.username}}</h6>
-                                          <p></p>
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td>
-                                      <h6>{{ o.name.product.name }}</h6>
-                                      <p></p>
-                                    </td>
-                                    <td>
-                                      <div>
-                                        <div class="d-flex justify-content-between align-items-center mb-1 max-width-progress-wrap">
-                                          <p class="text-success">79%</p>
-                                          <p>{{o.name.price}}</p>
-                                        </div>
-                                        <div class="progress progress-md">
-                                          <div class="progress-bar bg-success" role="progressbar" style="width: 85%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                      </div>
-                                    </td>
-                                    <td><div class="badge badge-opacity-warning">{{o.status}}</div></td>
-                                  </tr>
-                                  {% endfor %}
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {% comment %}
-                    <div class="row flex-grow">
-                      <div class="col-md-6 col-lg-6 grid-margin stretch-card">
-                        <div class="card card-rounded">
-                          <div class="card-body card-rounded">
-                            <h4 class="card-title  card-title-dash">Recent Events</h4>
-                            <div class="list align-items-center border-bottom py-2">
-                              <div class="wrapper w-100">
-                                <p class="mb-2 font-weight-medium">
-                                  Change in Directors
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                  <div class="d-flex align-items-center">
-                                    <i class="mdi mdi-calendar text-muted me-1"></i>
-                                    <p class="mb-0 text-small text-muted">Mar 14, 2019</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="list align-items-center border-bottom py-2">
-                              <div class="wrapper w-100">
-                                <p class="mb-2 font-weight-medium">
-                                  Other Events
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                  <div class="d-flex align-items-center">
-                                    <i class="mdi mdi-calendar text-muted me-1"></i>
-                                    <p class="mb-0 text-small text-muted">Mar 14, 2019</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="list align-items-center border-bottom py-2">
-                              <div class="wrapper w-100">
-                                <p class="mb-2 font-weight-medium">
-                                  Quarterly Report
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                  <div class="d-flex align-items-center">
-                                    <i class="mdi mdi-calendar text-muted me-1"></i>
-                                    <p class="mb-0 text-small text-muted">Mar 14, 2019</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="list align-items-center border-bottom py-2">
-                              <div class="wrapper w-100">
-                                <p class="mb-2 font-weight-medium">
-                                  Change in Directors
-                                </p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                  <div class="d-flex align-items-center">
-                                    <i class="mdi mdi-calendar text-muted me-1"></i>
-                                    <p class="mb-0 text-small text-muted">Mar 14, 2019</p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-
-                            <div class="list align-items-center pt-3">
-                              <div class="wrapper w-100">
-                                <p class="mb-0">
-                                  <a href="#" class="fw-bold text-primary">Show all <i class="mdi mdi-arrow-right ms-2"></i></a>
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-md-6 col-lg-6 grid-margin stretch-card">
-                        <div class="card card-rounded">
-                          <div class="card-body">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                              <h4 class="card-title card-title-dash">Activities</h4>
-                              <p class="mb-0">20 finished, 5 remaining</p>
-                            </div>
-                            <ul class="bullet-line-list">
-                              <li>
-                                <div class="d-flex justify-content-between">
-                                  <div><span class="text-light-green">Ben Tossell</span> assign you a task</div>
-                                  <p>Just now</p>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="d-flex justify-content-between">
-                                  <div><span class="text-light-green">Oliver Noah</span> assign you a task</div>
-                                  <p>1h</p>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="d-flex justify-content-between">
-                                  <div><span class="text-light-green">Jack William</span> assign you a task</div>
-                                  <p>1h</p>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="d-flex justify-content-between">
-                                  <div><span class="text-light-green">Leo Lucas</span> assign you a task</div>
-                                  <p>1h</p>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="d-flex justify-content-between">
-                                  <div><span class="text-light-green">Thomas Henry</span> assign you a task</div>
-                                  <p>1h</p>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="d-flex justify-content-between">
-                                  <div><span class="text-light-green">Ben Tossell</span> assign you a task</div>
-                                  <p>1h</p>
-                                </div>
-                              </li>
-                              <li>
-                                <div class="d-flex justify-content-between">
-                                  <div><span class="text-light-green">Ben Tossell</span> assign you a task</div>
-                                  <p>1h</p>
-                                </div>
-                              </li>
-                            </ul>
-                            <div class="list align-items-center pt-3">
-                              <div class="wrapper w-100">
-                                <p class="mb-0">
-                                  <a href="#" class="fw-bold text-primary">Show all <i class="mdi mdi-arrow-right ms-2"></i></a>
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {% endcomment %}
-                  </div>
-                  <div class="col-lg-4 d-flex flex-column">
-                    <div class="row flex-grow">
-                      <div class="col-12 grid-margin stretch-card">
-                        <div class="card card-rounded">
-                          <div class="card-body">
-                            <div class="row">
-                              <div class="col-lg-12">
-                                <div class="d-flex justify-content-between align-items-center">
-                                  <h4 class="card-title card-title-dash">{{user.username}} Todo list</h4>
-                                  <div class="add-items d-flex mb-0">
-                                    <button type="button" class="add btn btn-icons btn-rounded btn-primary todo-list-add-btn text-white me-0 pl-12p " data-bs-toggle="modal" data-bs-target="#addUserModal"><i class="mdi mdi-plus"></i></button>
-                                  </div>
-                                </div>
-                                <div class="list-wrapper">
-                                  <ul class="todo-list todo-list-rounded">
-                                      {% for T in pd %}
-                                          <li class="d-block todo-item {% if forloop.counter > 5 %}hidden{% endif %}">
-                                              <div class="form-check w-100">
-                                                  <label class="form-check-label">
-                                                      <input class="checkbox" type="checkbox"> {{ T.activities_name }} ({{ T.description }}) <i class="input-helper rounded"></i>
-                                                  </label>
-                                                  <div class="d-flex mt-2">
-                                                      <div class="ps-4 text-small me-3">{{ T.date|date:"Y-m-d" }}</div>
-                                                      <p>{{ T.time|time:"H:i" }}</p>
-                                                      <div class="{% if T.status == 'Completed' %}badge badge-opacity-success me-3{% elif T.status == 'Due Tomorrow' %} badge badge-opacity-secondary me-3 {% elif T.status == 'In Progress' %}  badge badge-opacity-primary me-3{% else %}badge badge-opacity-warning me-3{% endif %}">{{ T.status }}</div>
-                                                      <a href="#" data-bs-toggle="modal" data-bs-target="#editModal{{ T.id }}" class="text-success">
-                                                        <i class="ti-pencil"></i>
-                                                    </a>
-                                                  </div>
-                                              </div>
-                                          </li>
-                                      {% endfor %}
-                                  </ul>
-                                  <button id="see-more-btn" class="btn btn-primary">See More</button>
-                              </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="row flex-grow">
+              <!-- <div class="col-lg-4 d-flex flex-column">
+                      <div class="row flex-grow">
                       <div class="col-12 grid-margin stretch-card">
                         <div class="card card-rounded">
                           <div class="card-body">
@@ -456,118 +100,55 @@
                         </div>
                       </div>
                     </div>
-                    {% comment %}
+              </div> -->
+                </div>
+                <div class="row">
+                  <div class="col-lg-8 d-flex flex-column">
                     <div class="row flex-grow">
                       <div class="col-12 grid-margin stretch-card">
                         <div class="card card-rounded">
                           <div class="card-body">
-                            <div class="row">
-                              <div class="col-lg-12">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                  <div>
-                                    <h4 class="card-title card-title-dash">Leave Report</h4>
-                                  </div>
-                                  <div>
-                                    <div class="dropdown">
-                                      <button class="btn btn-secondary dropdown-toggle toggle-dark btn-lg mb-0 me-0" type="button" id="dropdownMenuButton3" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Month Wise </button>
-                                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton3">
-                                        <h6 class="dropdown-header">week Wise</h6>
-                                        <a class="dropdown-item" href="#">Year Wise</a>
-                                      </div>
+                            <div class="d-sm-flex justify-content-between align-items-start">
+                              <div>
+                                <h4 class="card-title card-title-dash">Market Overview</h4>
+                              <p class="card-subtitle card-subtitle-dash">Monthly market review</p>
+                              </div>
+                              <div>
+                                  <div class="dropdown">
+                                    <button class="btn btn-secondary dropdown-toggle toggle-dark btn-lg mb-0 me-0"
+                                            type="button"
+                                            id="dropdownMenuButton2"
+                                            data-bs-toggle="dropdown"
+                                            aria-haspopup="true"
+                                            aria-expanded="false">
+
+                                        {{ selected_year }}
+                                    </button>
+
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton2">
+                                      <h6 class="dropdown-header">Select Year</h6>
+
+                                      {% for d in available_years %}
+                                        <a class="dropdown-item {% if d.year == selected_year %}active{% endif %}"
+                                          href="?year={{ d.year }}">
+                                            {{ d.year }}
+                                        </a>
+                                      {% endfor %}
                                     </div>
                                   </div>
-                                </div>
-                                <div class="mt-3">
-                                  <canvas id="leaveReport"></canvas>
-                                </div>
                               </div>
+                            </div>
+                            <div class="d-sm-flex align-items-center mt-1 justify-content-between">
+                              <div class="d-sm-flex align-items-center mt-4 justify-content-between"><h2 class="me-2 fw-bold"></h2><h4 class="me-2"></h4><h4 class="{% if p < 0 %} text-danger {% else %} text-success {% endif %}"></h4></div>
+                              <div class="me-3"><div id="marketing-overview-legend"></div></div>
+                            </div>
+                            <div class="chartjs-bar-wrapper mt-3">
+                              <canvas id="marketingOverview" width="400" height="200"></canvas>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    {% endcomment %}
-                    {% comment %}
-                    <div class="row flex-grow">
-                      <div class="col-12 grid-margin stretch-card">
-                        <div class="card card-rounded">
-                          <div class="card-body">
-                            <div class="row">
-                              <div class="col-lg-12">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                  <div>
-                                    <h4 class="card-title card-title-dash">Top Performer</h4>
-                                  </div>
-                                </div>
-                                <div class="mt-3">
-                                  <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
-                                    <div class="d-flex">
-                                      <img class="img-sm rounded-10" src="images/faces/face1.jpg" alt="profile">
-                                      <div class="wrapper ms-3">
-                                        <p class="ms-1 mb-1 fw-bold">Brandon Washington</p>
-                                        <small class="text-muted mb-0">162543</small>
-                                      </div>
-                                    </div>
-                                    <div class="text-muted text-small">
-                                      1h ago
-                                    </div>
-                                  </div>
-                                  <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
-                                    <div class="d-flex">
-                                      <img class="img-sm rounded-10" src="images/faces/face2.jpg" alt="profile">
-                                      <div class="wrapper ms-3">
-                                        <p class="ms-1 mb-1 fw-bold">Wayne Murphy</p>
-                                        <small class="text-muted mb-0">162543</small>
-                                      </div>
-                                    </div>
-                                    <div class="text-muted text-small">
-                                      1h ago
-                                    </div>
-                                  </div>
-                                  <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
-                                    <div class="d-flex">
-                                      <img class="img-sm rounded-10" src="images/faces/face3.jpg" alt="profile">
-                                      <div class="wrapper ms-3">
-                                        <p class="ms-1 mb-1 fw-bold">Katherine Butler</p>
-                                        <small class="text-muted mb-0">162543</small>
-                                      </div>
-                                    </div>
-                                    <div class="text-muted text-small">
-                                      1h ago
-                                    </div>
-                                  </div>
-                                  <div class="wrapper d-flex align-items-center justify-content-between py-2 border-bottom">
-                                    <div class="d-flex">
-                                      <img class="img-sm rounded-10" src="images/faces/face4.jpg" alt="profile">
-                                      <div class="wrapper ms-3">
-                                        <p class="ms-1 mb-1 fw-bold">Matthew Bailey</p>
-                                        <small class="text-muted mb-0">162543</small>
-                                      </div>
-                                    </div>
-                                    <div class="text-muted text-small">
-                                      1h ago
-                                    </div>
-                                  </div>
-                                  <div class="wrapper d-flex align-items-center justify-content-between pt-2">
-                                    <div class="d-flex">
-                                      <img class="img-sm rounded-10" src="images/faces/face5.jpg" alt="profile">
-                                      <div class="wrapper ms-3">
-                                        <p class="ms-1 mb-1 fw-bold">Rafell John</p>
-                                        <small class="text-muted mb-0">Alaska, USA</small>
-                                      </div>
-                                    </div>
-                                    <div class="text-muted text-small">
-                                      1h ago
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    {% endcomment%}
                   </div>
                 </div>
               </div>
@@ -577,35 +158,139 @@
       </div>
     </div>
 </div>
+<!-- Financial Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="post" action="{% url 'financial_report' %}">
+      {% csrf_token %}
+      <div class="modal-content">
 
-  <script>
+        <div class="modal-header">
+          <h5 class="modal-title">Generate Financial Report</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
 
+        <div class="modal-body">
+
+          <!-- Filter Type -->
+          <div class="mb-3">
+            <label class="form-label">Filter Type</label>
+            <select class="form-select" name="filter_type" id="filter_type" required>
+              <option value="date">Date Range</option>
+              <option value="year">Year</option>
+            </select>
+          </div>
+
+          <!-- Date Range -->
+          <div id="dateFields">
+            <div class="mb-3">
+              <label class="form-label">Start Date</label>
+              <input type="date" class="form-control" name="start_date">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">End Date</label>
+              <input type="date" class="form-control" name="end_date">
+            </div>
+          </div>
+
+          <!-- Year -->
+          <div class="mb-3 d-none" id="yearField">
+            <label class="form-label">Select Year</label>
+            <input type="number" class="form-control" name="year" min="2000" max="2100">
+          </div>
+
+          <!-- Format -->
+          <div class="mb-3">
+            <label class="form-label">Export Format</label>
+            <select class="form-select" name="format" required>
+              <option value="excel">Excel</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Download</button>
+        </div>
+
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.getElementById('filter_type').addEventListener('change', function() {
+    if (this.value === 'year') {
+        document.getElementById('yearField').classList.remove('d-none');
+        document.getElementById('dateFields').classList.add('d-none');
+    } else {
+        document.getElementById('yearField').classList.add('d-none');
+        document.getElementById('dateFields').classList.remove('d-none');
+    }
+});
+</script>
+
+
+<!-- Modal -->
+<div class="modal fade" id="unsoldStockModal" tabindex="-1" aria-labelledby="unsoldStockModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="get" action="{% url 'unsold_stock_report' %}">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="unsoldStockModalLabel">Generate Unsold Stock Report</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <p>This will generate a PDF report of all unsold stock with COGS.</p>
+          <label>Export Format:</label>
+          <select name="format" class="form-select" required>
+            <option value="pdf">PDF</option>
+          </select>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Download Report</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+ <script>
+    // -----------------------------
+    // PARSE DATA FROM DJANGO CONTEXT
+    // -----------------------------
     var purchase_totals = JSON.parse('{{ purchase_totals|escapejs }}');
-    console.log(purchase_totals);
-    var sales_totals = JSON.parse('{{ sales_totals|safe }}');
-    console.log(sales_totals);
-    var months = JSON.parse('{{ months|safe }}');
-    console.log(months);
+    var sales_totals = JSON.parse('{{ sales_totals|escapejs }}');
+    var months = JSON.parse('{{ months|escapejs }}');
 
-    var this_week_totals = JSON.parse('{{ this_week_totals|safe }}');
-    console.log(this_week_totals);
-    var last_week_totals = JSON.parse('{{ last_week_totals|safe }}');
-    console.log(last_week_totals);
-    var day_sales = JSON.parse('{{ day_sales|safe }}');
-    console.log(day_sales);
+    var this_week_totals = JSON.parse('{{ this_week_totals|escapejs }}');
+    var last_week_totals = JSON.parse('{{ last_week_totals|escapejs }}');
+    var day_labels = JSON.parse('{{ day_labels|escapejs }}');
 
-    // Parse the products data that was passed from the Django view
-    var productsData = JSON.parse('{{ products | safe }}');
+    // Top products
+    var daily_top_product_labels = JSON.parse('{{ top_product_labels|escapejs }}');
+    var daily_top_product_totals = JSON.parse('{{ top_product_totals|escapejs }}');
 
-    // Prepare the labels (product names) and data (quantities) for the chart
-    var productLabels = productsData.map(product => product.name__name__category__name);
-    var productQuantities = productsData.map(product => product.total);
+    var weekly_top_product_labels = JSON.parse('{{ weekly_top_product_labels|escapejs }}');
+    var weekly_top_product_totals = JSON.parse('{{ weekly_top_product_totals|escapejs }}');
 
-    // Debugging outputs
-    console.log('Product Labels:', productLabels);
-    console.log('Product Quantities:', productQuantities);
+    var monthly_top_product_labels = JSON.parse('{{ monthly_top_product_labels|escapejs }}');
+    var monthly_top_product_totals = JSON.parse('{{ monthly_top_product_totals|escapejs }}');
 
-  </script>
-
+    console.log("Purchase Totals:", purchase_totals);
+    console.log("Sales Totals:", sales_totals);
+    console.log("Months:", months);
+    console.log("This Week Totals:", this_week_totals);
+    console.log("Last Week Totals:", last_week_totals);
+    console.log("Day Labels:", day_labels);
+    console.log("Daily Top Products:", daily_top_product_labels, daily_top_product_totals);
+    console.log("Weekly Top Products:", weekly_top_product_labels, weekly_top_product_totals);
+    console.log("Monthly Top Products:", monthly_top_product_labels, monthly_top_product_totals);
+</script>
 
 {% endblock %}

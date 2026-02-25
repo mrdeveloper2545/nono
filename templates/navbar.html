@@ -7,10 +7,10 @@
     </div>
     <div>
       <a class="navbar-brand brand-logo">
-        <img src="/static/images/nono.png"  alt="logo" />
+        <img src="/static/images/system-logo.png"  alt="logo" />
       </a>
       <a class="navbar-brand brand-logo-mini">
-        <img src="/static/images/nono.png" alt="logo" />
+        <img src="/static/images/system-logo.png" alt="logo" />
       </a>
     </div>
   </div>
@@ -149,7 +149,10 @@
           <a href="{% url 'user-profile' user.id %}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-account-outline text-primary me-2"></i> My Profile <span class="badge badge-pill badge-danger">1</span></a>
           <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-message-text-outline text-primary me-2"></i> Messages</a>
           <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-calendar-check-outline text-primary me-2"></i> Activity</a>
-          <a class="dropdown-item"><i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i> FAQ</a>
+          <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#PasswordModal">
+            <i class="dropdown-item-icon mdi mdi-help-circle-outline text-primary me-2"></i>
+            Change Password
+          </a>          
           <a href="{% url 'logout' %}" class="dropdown-item"><i class="dropdown-item-icon mdi mdi-power text-primary me-2"></i>Sign Out</a>
         </div>
       </li>
@@ -159,5 +162,47 @@
     </button>
   </div>
 </nav>
+<!-- Password Change Modal -->
+<div class="modal fade" id="PasswordModal" tabindex="-1" aria-labelledby="PasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <form method="post" action="{% url 'custom_password_change' %}">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="PasswordModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Old Password -->
+          <div class="mb-3">
+            <label for="id_old_password" class="form-label">Old Password</label>
+            <input type="password" name="old_password" class="form-control" id="id_old_password" required>
+          </div>
+
+          <!-- New Password -->
+          <div class="mb-3">
+            <label for="id_new_password1" class="form-label">New Password</label>
+            <input type="password" name="new_password1" class="form-control" id="id_new_password1" required>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="mb-3">
+            <label for="id_new_password2" class="form-label">Confirm New Password</label>
+            <input type="password" name="new_password2" class="form-control" id="id_new_password2" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Change Password</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
 
 
